@@ -882,3 +882,23 @@
 [2026-05-04T22:09:57.323+0000] {logging_mixin.py:190} INFO - [2026-05-04T22:09:57.323+0000] {dag.py:3239} INFO - Sync 1 DAGs
 [2026-05-04T22:09:57.350+0000] {logging_mixin.py:190} INFO - [2026-05-04T22:09:57.350+0000] {dag.py:4180} INFO - Setting next_dagrun for spark_test_write_every_5_min to 2026-05-04 22:05:00+00:00, run_after=2026-05-04 22:10:00+00:00
 [2026-05-04T22:09:57.372+0000] {processor.py:208} INFO - Processing /opt/airflow/dags/spark_test_write_every_5_min.py took 0.130 seconds
+[2026-05-04T22:10:28.047+0000] {processor.py:186} INFO - Started process (PID=588) to work on /opt/airflow/dags/spark_test_write_every_5_min.py
+[2026-05-04T22:10:28.055+0000] {processor.py:914} INFO - Processing file /opt/airflow/dags/spark_test_write_every_5_min.py for tasks to queue
+[2026-05-04T22:10:28.064+0000] {logging_mixin.py:190} INFO - [2026-05-04T22:10:28.063+0000] {dagbag.py:588} INFO - Filling up the DagBag from /opt/airflow/dags/spark_test_write_every_5_min.py
+[2026-05-04T22:10:28.164+0000] {processor.py:925} INFO - DAG(s) 'spark_test_write_every_5_min' retrieved from /opt/airflow/dags/spark_test_write_every_5_min.py
+[2026-05-04T22:10:28.236+0000] {logging_mixin.py:190} INFO - [2026-05-04T22:10:28.236+0000] {dag.py:3239} INFO - Sync 1 DAGs
+[2026-05-04T22:10:28.326+0000] {processor.py:208} INFO - Processing /opt/airflow/dags/spark_test_write_every_5_min.py took 0.303 seconds
+[2026-05-04T22:10:58.888+0000] {processor.py:186} INFO - Started process (PID=593) to work on /opt/airflow/dags/spark_test_write_every_5_min.py
+[2026-05-04T22:10:58.889+0000] {processor.py:914} INFO - Processing file /opt/airflow/dags/spark_test_write_every_5_min.py for tasks to queue
+[2026-05-04T22:10:58.893+0000] {logging_mixin.py:190} INFO - [2026-05-04T22:10:58.893+0000] {dagbag.py:588} INFO - Filling up the DagBag from /opt/airflow/dags/spark_test_write_every_5_min.py
+[2026-05-04T22:10:58.917+0000] {processor.py:925} INFO - DAG(s) 'spark_test_write_every_5_min' retrieved from /opt/airflow/dags/spark_test_write_every_5_min.py
+[2026-05-04T22:10:58.963+0000] {logging_mixin.py:190} INFO - [2026-05-04T22:10:58.963+0000] {dag.py:3239} INFO - Sync 1 DAGs
+[2026-05-04T22:10:58.989+0000] {logging_mixin.py:190} INFO - [2026-05-04T22:10:58.989+0000] {dag.py:4180} INFO - Setting next_dagrun for spark_test_write_every_5_min to 2026-05-04 22:10:00+00:00, run_after=2026-05-04 22:15:00+00:00
+[2026-05-04T22:10:59.047+0000] {processor.py:208} INFO - Processing /opt/airflow/dags/spark_test_write_every_5_min.py took 0.167 seconds
+[2026-05-04T22:11:29.756+0000] {processor.py:186} INFO - Started process (PID=598) to work on /opt/airflow/dags/spark_test_write_every_5_min.py
+[2026-05-04T22:11:29.758+0000] {processor.py:914} INFO - Processing file /opt/airflow/dags/spark_test_write_every_5_min.py for tasks to queue
+[2026-05-04T22:11:29.761+0000] {logging_mixin.py:190} INFO - [2026-05-04T22:11:29.761+0000] {dagbag.py:588} INFO - Filling up the DagBag from /opt/airflow/dags/spark_test_write_every_5_min.py
+[2026-05-04T22:11:29.788+0000] {processor.py:925} INFO - DAG(s) 'spark_test_write_every_5_min' retrieved from /opt/airflow/dags/spark_test_write_every_5_min.py
+[2026-05-04T22:11:29.826+0000] {logging_mixin.py:190} INFO - [2026-05-04T22:11:29.826+0000] {dag.py:3239} INFO - Sync 1 DAGs
+[2026-05-04T22:11:29.853+0000] {logging_mixin.py:190} INFO - [2026-05-04T22:11:29.853+0000] {dag.py:4180} INFO - Setting next_dagrun for spark_test_write_every_5_min to 2026-05-04 22:10:00+00:00, run_after=2026-05-04 22:15:00+00:00
+[2026-05-04T22:11:29.877+0000] {processor.py:208} INFO - Processing /opt/airflow/dags/spark_test_write_every_5_min.py took 0.126 seconds

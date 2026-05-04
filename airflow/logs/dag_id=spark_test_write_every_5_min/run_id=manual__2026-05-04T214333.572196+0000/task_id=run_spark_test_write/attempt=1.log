@@ -1,0 +1,243 @@
+[2026-05-04T21:43:37.736+0000] {local_task_job_runner.py:123} INFO - ::group::Pre task execution logs
+[2026-05-04T21:43:37.785+0000] {taskinstance.py:2614} INFO - Dependencies all met for dep_context=non-requeueable deps ti=<TaskInstance: spark_test_write_every_5_min.run_spark_test_write manual__2026-05-04T21:43:33.572196+00:00 [queued]>
+[2026-05-04T21:43:37.801+0000] {taskinstance.py:2614} INFO - Dependencies all met for dep_context=requeueable deps ti=<TaskInstance: spark_test_write_every_5_min.run_spark_test_write manual__2026-05-04T21:43:33.572196+00:00 [queued]>
+[2026-05-04T21:43:37.808+0000] {taskinstance.py:2867} INFO - Starting attempt 1 of 1
+[2026-05-04T21:43:37.856+0000] {taskinstance.py:2890} INFO - Executing <Task(DockerOperator): run_spark_test_write> on 2026-05-04 21:43:33.572196+00:00
+[2026-05-04T21:43:37.869+0000] {standard_task_runner.py:72} INFO - Started process 297 to run task
+[2026-05-04T21:43:37.873+0000] {standard_task_runner.py:104} INFO - Running: ['***', 'tasks', 'run', 'spark_test_write_every_5_min', 'run_spark_test_write', 'manual__2026-05-04T21:43:33.572196+00:00', '--job-id', '17', '--raw', '--subdir', 'DAGS_FOLDER/spark_test_write_every_5_min.py', '--cfg-path', '/tmp/tmp8bbiay4t']
+[2026-05-04T21:43:37.878+0000] {standard_task_runner.py:105} INFO - Job 17: Subtask run_spark_test_write
+[2026-05-04T21:43:38.010+0000] {task_command.py:467} INFO - Running <TaskInstance: spark_test_write_every_5_min.run_spark_test_write manual__2026-05-04T21:43:33.572196+00:00 [running]> on host ***-scheduler
+[2026-05-04T21:43:38.176+0000] {taskinstance.py:3134} INFO - Exporting env vars: AIRFLOW_CTX_DAG_OWNER='***' AIRFLOW_CTX_DAG_ID='spark_test_write_every_5_min' AIRFLOW_CTX_TASK_ID='run_spark_test_write' AIRFLOW_CTX_EXECUTION_DATE='2026-05-04T21:43:33.572196+00:00' AIRFLOW_CTX_TRY_NUMBER='1' AIRFLOW_CTX_DAG_RUN_ID='manual__2026-05-04T21:43:33.572196+00:00'
+[2026-05-04T21:43:38.178+0000] {taskinstance.py:732} INFO - ::endgroup::
+[2026-05-04T21:43:38.459+0000] {docker.py:345} INFO - Starting docker container from image apache/spark:3.5.6
+[2026-05-04T21:43:47.295+0000] {docker.py:69} INFO - 26/05/04 21:43:47 INFO SparkContext: Running Spark version 3.5.6
+[2026-05-04T21:43:47.316+0000] {docker.py:69} INFO - 26/05/04 21:43:47 INFO SparkContext: OS info Linux, 6.6.87.2-microsoft-standard-WSL2, amd64
+[2026-05-04T21:43:47.325+0000] {docker.py:69} INFO - 26/05/04 21:43:47 INFO SparkContext: Java version 11.0.27
+[2026-05-04T21:43:47.560+0000] {docker.py:69} INFO - 26/05/04 21:43:47 WARN NativeCodeLoader: Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
+[2026-05-04T21:43:47.724+0000] {docker.py:69} INFO - 26/05/04 21:43:47 INFO ResourceUtils: ==============================================================
+[2026-05-04T21:43:47.726+0000] {docker.py:69} INFO - 26/05/04 21:43:47 INFO ResourceUtils: No custom resources configured for spark.driver.
+[2026-05-04T21:43:47.727+0000] {docker.py:69} INFO - 26/05/04 21:43:47 INFO ResourceUtils: ==============================================================
+[2026-05-04T21:43:47.728+0000] {docker.py:69} INFO - 26/05/04 21:43:47 INFO SparkContext: Submitted application: iot-spark-hudi-minio-test
+[2026-05-04T21:43:47.769+0000] {docker.py:69} INFO - 26/05/04 21:43:47 INFO ResourceProfile: Default ResourceProfile created, executor resources: Map(memory -> name: memory, amount: 1024, script: , vendor: , offHeap -> name: offHeap, amount: 0, script: , vendor: ), task resources: Map(cpus -> name: cpus, amount: 1.0)
+[2026-05-04T21:43:47.877+0000] {docker.py:69} INFO - 26/05/04 21:43:47 INFO ResourceProfile: Limiting resource is cpu
+[2026-05-04T21:43:47.890+0000] {docker.py:69} INFO - 26/05/04 21:43:47 INFO ResourceProfileManager: Added ResourceProfile id: 0
+[2026-05-04T21:43:48.034+0000] {docker.py:69} INFO - 26/05/04 21:43:48 INFO SecurityManager: Changing view acls to: spark
+[2026-05-04T21:43:48.036+0000] {docker.py:69} INFO - 26/05/04 21:43:48 INFO SecurityManager: Changing modify acls to: spark
+[2026-05-04T21:43:48.037+0000] {docker.py:69} INFO - 26/05/04 21:43:48 INFO SecurityManager: Changing view acls groups to:
+[2026-05-04T21:43:48.040+0000] {docker.py:69} INFO - 26/05/04 21:43:48 INFO SecurityManager: Changing modify acls groups to:
+[2026-05-04T21:43:48.041+0000] {docker.py:69} INFO - 26/05/04 21:43:48 INFO SecurityManager: SecurityManager: authentication disabled; ui acls disabled; users with view permissions: spark; groups with view permissions: EMPTY; users with modify permissions: spark; groups with modify permissions: EMPTY
+[2026-05-04T21:43:48.513+0000] {docker.py:69} INFO - 26/05/04 21:43:48 INFO Utils: Successfully started service 'sparkDriver' on port 37551.
+[2026-05-04T21:43:48.657+0000] {docker.py:69} INFO - 26/05/04 21:43:48 INFO SparkEnv: Registering MapOutputTracker
+[2026-05-04T21:43:48.756+0000] {docker.py:69} INFO - 26/05/04 21:43:48 INFO SparkEnv: Registering BlockManagerMaster
+[2026-05-04T21:43:48.781+0000] {docker.py:69} INFO - 26/05/04 21:43:48 INFO BlockManagerMasterEndpoint: Using org.apache.spark.storage.DefaultTopologyMapper for getting topology information
+[2026-05-04T21:43:48.782+0000] {docker.py:69} INFO - 26/05/04 21:43:48 INFO BlockManagerMasterEndpoint: BlockManagerMasterEndpoint up
+[2026-05-04T21:43:48.793+0000] {docker.py:69} INFO - 26/05/04 21:43:48 INFO SparkEnv: Registering BlockManagerMasterHeartbeat
+[2026-05-04T21:43:48.851+0000] {docker.py:69} INFO - 26/05/04 21:43:48 INFO DiskBlockManager: Created local directory at /tmp/blockmgr-5fcd8161-caff-49c5-b253-817c9155c3ed
+[2026-05-04T21:43:48.953+0000] {docker.py:69} INFO - 26/05/04 21:43:48 INFO MemoryStore: MemoryStore started with capacity 434.4 MiB
+[2026-05-04T21:43:48.975+0000] {docker.py:69} INFO - 26/05/04 21:43:48 INFO SparkEnv: Registering OutputCommitCoordinator
+[2026-05-04T21:43:49.408+0000] {docker.py:69} INFO - 26/05/04 21:43:49 INFO JettyUtils: Start Jetty 0.0.0.0:4040 for SparkUI
+[2026-05-04T21:43:49.586+0000] {docker.py:69} INFO - 26/05/04 21:43:49 INFO Utils: Successfully started service 'SparkUI' on port 4040.
+[2026-05-04T21:43:49.811+0000] {docker.py:69} INFO - 26/05/04 21:43:49 INFO StandaloneAppClient$ClientEndpoint: Connecting to master spark://spark-master:7077...
+[2026-05-04T21:43:50.046+0000] {docker.py:69} INFO - 26/05/04 21:43:50 INFO TransportClientFactory: Successfully created connection to spark-master/172.18.0.5:7077 after 134 ms (0 ms spent in bootstraps)
+[2026-05-04T21:43:50.345+0000] {docker.py:69} INFO - 26/05/04 21:43:50 INFO StandaloneSchedulerBackend: Connected to Spark cluster with app ID app-20260504214350-0001
+[2026-05-04T21:43:50.347+0000] {docker.py:69} INFO - 26/05/04 21:43:50 INFO StandaloneAppClient$ClientEndpoint: Executor added: app-20260504214350-0001/0 on worker-20260504213758-172.18.0.4-37003 (172.18.0.4:37003) with 2 core(s)
+[2026-05-04T21:43:50.349+0000] {docker.py:69} INFO - 26/05/04 21:43:50 INFO StandaloneSchedulerBackend: Granted executor ID app-20260504214350-0001/0 on hostPort 172.18.0.4:37003 with 2 core(s), 1024.0 MiB RAM
+[2026-05-04T21:43:50.358+0000] {docker.py:69} INFO - 26/05/04 21:43:50 INFO Utils: Successfully started service 'org.apache.spark.network.netty.NettyBlockTransferService' on port 45151.
+[2026-05-04T21:43:50.360+0000] {docker.py:69} INFO - 26/05/04 21:43:50 INFO NettyBlockTransferService: Server created on 3efeca1404bb:45151
+[2026-05-04T21:43:50.361+0000] {docker.py:69} INFO - 26/05/04 21:43:50 INFO BlockManager: Using org.apache.spark.storage.RandomBlockReplicationPolicy for block replication policy
+[2026-05-04T21:43:50.374+0000] {docker.py:69} INFO - 26/05/04 21:43:50 INFO BlockManagerMaster: Registering BlockManager BlockManagerId(driver, 3efeca1404bb, 45151, None)
+[2026-05-04T21:43:50.379+0000] {docker.py:69} INFO - 26/05/04 21:43:50 INFO BlockManagerMasterEndpoint: Registering block manager 3efeca1404bb:45151 with 434.4 MiB RAM, BlockManagerId(driver, 3efeca1404bb, 45151, None)
+[2026-05-04T21:43:50.383+0000] {docker.py:69} INFO - 26/05/04 21:43:50 INFO BlockManagerMaster: Registered BlockManager BlockManagerId(driver, 3efeca1404bb, 45151, None)
+[2026-05-04T21:43:50.385+0000] {docker.py:69} INFO - 26/05/04 21:43:50 INFO BlockManager: Initialized BlockManager: BlockManagerId(driver, 3efeca1404bb, 45151, None)
+[2026-05-04T21:43:50.411+0000] {docker.py:69} INFO - 26/05/04 21:43:50 INFO StandaloneAppClient$ClientEndpoint: Executor updated: app-20260504214350-0001/0 is now RUNNING
+[2026-05-04T21:43:50.731+0000] {docker.py:69} INFO - 26/05/04 21:43:50 INFO StandaloneSchedulerBackend: SchedulerBackend is ready for scheduling beginning after reached minRegisteredResourcesRatio: 0.0
+[2026-05-04T21:43:51.121+0000] {docker.py:69} INFO - 26/05/04 21:43:51 INFO SharedState: Setting hive.metastore.warehouse.dir ('null') to the value of spark.sql.warehouse.dir.
+[2026-05-04T21:43:51.134+0000] {docker.py:69} INFO - 26/05/04 21:43:51 INFO SharedState: Warehouse path is 'file:/opt/spark/work-dir/spark-warehouse'.
+[2026-05-04T21:43:56.408+0000] {docker.py:69} INFO - 26/05/04 21:43:56 INFO StandaloneSchedulerBackend$StandaloneDriverEndpoint: Registered executor NettyRpcEndpointRef(spark-client://Executor) (172.18.0.4:51186) with ID 0,  ResourceProfileId 0
+[2026-05-04T21:43:56.623+0000] {docker.py:69} INFO - 26/05/04 21:43:56 INFO BlockManagerMasterEndpoint: Registering block manager 172.18.0.4:42901 with 434.4 MiB RAM, BlockManagerId(0, 172.18.0.4, 42901, None)
+[2026-05-04T21:43:59.402+0000] {docker.py:69} INFO - 26/05/04 21:43:59 INFO CodeGenerator: Code generated in 653.583899 ms
+[2026-05-04T21:43:59.538+0000] {docker.py:69} INFO - 26/05/04 21:43:59 INFO SparkContext: Starting job: showString at <unknown>:0
+[2026-05-04T21:43:59.597+0000] {docker.py:69} INFO - 26/05/04 21:43:59 INFO DAGScheduler: Got job 0 (showString at <unknown>:0) with 1 output partitions
+[2026-05-04T21:43:59.601+0000] {docker.py:69} INFO - 26/05/04 21:43:59 INFO DAGScheduler: Final stage: ResultStage 0 (showString at <unknown>:0)
+[2026-05-04T21:43:59.605+0000] {docker.py:69} INFO - 26/05/04 21:43:59 INFO DAGScheduler: Parents of final stage: List()
+[2026-05-04T21:43:59.623+0000] {docker.py:69} INFO - 26/05/04 21:43:59 INFO DAGScheduler: Missing parents: List()
+[2026-05-04T21:43:59.632+0000] {docker.py:69} INFO - 26/05/04 21:43:59 INFO DAGScheduler: Submitting ResultStage 0 (MapPartitionsRDD[6] at showString at <unknown>:0), which has no missing parents
+[2026-05-04T21:43:59.911+0000] {docker.py:69} INFO - 26/05/04 21:43:59 INFO MemoryStore: Block broadcast_0 stored as values in memory (estimated size 13.1 KiB, free 434.4 MiB)
+[2026-05-04T21:44:01.020+0000] {docker.py:69} INFO - 26/05/04 21:44:01 INFO MemoryStore: Block broadcast_0_piece0 stored as bytes in memory (estimated size 6.7 KiB, free 434.4 MiB)
+[2026-05-04T21:44:01.034+0000] {docker.py:69} INFO - 26/05/04 21:44:01 INFO BlockManagerInfo: Added broadcast_0_piece0 in memory on 3efeca1404bb:45151 (size: 6.7 KiB, free: 434.4 MiB)
+[2026-05-04T21:44:01.043+0000] {docker.py:69} INFO - 26/05/04 21:44:01 INFO SparkContext: Created broadcast 0 from broadcast at DAGScheduler.scala:1611
+[2026-05-04T21:44:01.073+0000] {docker.py:69} INFO - 26/05/04 21:44:01 INFO DAGScheduler: Submitting 1 missing tasks from ResultStage 0 (MapPartitionsRDD[6] at showString at <unknown>:0) (first 15 tasks are for partitions Vector(0))
+[2026-05-04T21:44:01.089+0000] {docker.py:69} INFO - 26/05/04 21:44:01 INFO TaskSchedulerImpl: Adding task set 0.0 with 1 tasks resource profile 0
+[2026-05-04T21:44:01.303+0000] {docker.py:69} INFO - 26/05/04 21:44:01 INFO TaskSetManager: Starting task 0.0 in stage 0.0 (TID 0) (172.18.0.4, executor 0, partition 0, PROCESS_LOCAL, 8936 bytes)
+[2026-05-04T21:44:03.170+0000] {docker.py:69} INFO - 26/05/04 21:44:03 INFO BlockManagerInfo: Added broadcast_0_piece0 in memory on 172.18.0.4:42901 (size: 6.7 KiB, free: 434.4 MiB)
+[2026-05-04T21:44:08.321+0000] {docker.py:69} INFO - 26/05/04 21:44:08 INFO TaskSetManager: Finished task 0.0 in stage 0.0 (TID 0) in 7099 ms on 172.18.0.4 (executor 0) (1/1)
+[2026-05-04T21:44:08.331+0000] {docker.py:69} INFO - 26/05/04 21:44:08 INFO TaskSchedulerImpl: Removed TaskSet 0.0, whose tasks have all completed, from pool
+[2026-05-04T21:44:08.343+0000] {docker.py:69} INFO - 26/05/04 21:44:08 INFO PythonAccumulatorV2: Connected to AccumulatorServer at host: 127.0.0.1 port: 34679
+[2026-05-04T21:44:08.358+0000] {docker.py:69} INFO - 26/05/04 21:44:08 INFO DAGScheduler: ResultStage 0 (showString at <unknown>:0) finished in 8.690 s
+[2026-05-04T21:44:08.379+0000] {docker.py:69} INFO - 26/05/04 21:44:08 INFO DAGScheduler: Job 0 is finished. Cancelling potential speculative or zombie tasks for this job
+[2026-05-04T21:44:08.390+0000] {docker.py:69} INFO - 26/05/04 21:44:08 INFO TaskSchedulerImpl: Killing all running tasks in stage 0: Stage finished
+[2026-05-04T21:44:08.393+0000] {docker.py:69} INFO - 26/05/04 21:44:08 INFO DAGScheduler: Job 0 finished: showString at <unknown>:0, took 7.341458 s
+[2026-05-04T21:44:08.411+0000] {docker.py:69} INFO - 26/05/04 21:44:08 INFO SparkContext: Starting job: showString at <unknown>:0
+[2026-05-04T21:44:08.415+0000] {docker.py:69} INFO - 26/05/04 21:44:08 INFO DAGScheduler: Got job 1 (showString at <unknown>:0) with 1 output partitions
+[2026-05-04T21:44:08.427+0000] {docker.py:69} INFO - 26/05/04 21:44:08 INFO DAGScheduler: Final stage: ResultStage 1 (showString at <unknown>:0)
+[2026-05-04T21:44:08.441+0000] {docker.py:69} INFO - 26/05/04 21:44:08 INFO DAGScheduler: Parents of final stage: List()
+[2026-05-04T21:44:08.445+0000] {docker.py:69} INFO - 26/05/04 21:44:08 INFO DAGScheduler: Missing parents: List()
+[2026-05-04T21:44:08.449+0000] {docker.py:69} INFO - 26/05/04 21:44:08 INFO DAGScheduler: Submitting ResultStage 1 (MapPartitionsRDD[6] at showString at <unknown>:0), which has no missing parents
+[2026-05-04T21:44:08.470+0000] {docker.py:69} INFO - 26/05/04 21:44:08 INFO MemoryStore: Block broadcast_1 stored as values in memory (estimated size 13.1 KiB, free 434.4 MiB)
+[2026-05-04T21:44:08.472+0000] {docker.py:69} INFO - 26/05/04 21:44:08 INFO MemoryStore: Block broadcast_1_piece0 stored as bytes in memory (estimated size 6.7 KiB, free 434.4 MiB)
+[2026-05-04T21:44:08.474+0000] {docker.py:69} INFO - 26/05/04 21:44:08 INFO BlockManagerInfo: Added broadcast_1_piece0 in memory on 3efeca1404bb:45151 (size: 6.7 KiB, free: 434.4 MiB)
+[2026-05-04T21:44:08.477+0000] {docker.py:69} INFO - 26/05/04 21:44:08 INFO SparkContext: Created broadcast 1 from broadcast at DAGScheduler.scala:1611
+[2026-05-04T21:44:08.479+0000] {docker.py:69} INFO - 26/05/04 21:44:08 INFO DAGScheduler: Submitting 1 missing tasks from ResultStage 1 (MapPartitionsRDD[6] at showString at <unknown>:0) (first 15 tasks are for partitions Vector(1))
+[2026-05-04T21:44:08.481+0000] {docker.py:69} INFO - 26/05/04 21:44:08 INFO TaskSchedulerImpl: Adding task set 1.0 with 1 tasks resource profile 0
+[2026-05-04T21:44:08.485+0000] {docker.py:69} INFO - 26/05/04 21:44:08 INFO TaskSetManager: Starting task 0.0 in stage 1.0 (TID 1) (172.18.0.4, executor 0, partition 1, PROCESS_LOCAL, 8986 bytes)
+[2026-05-04T21:44:08.547+0000] {docker.py:69} INFO - 26/05/04 21:44:08 INFO BlockManagerInfo: Added broadcast_1_piece0 in memory on 172.18.0.4:42901 (size: 6.7 KiB, free: 434.4 MiB)
+[2026-05-04T21:44:08.663+0000] {docker.py:69} INFO - 26/05/04 21:44:08 INFO TaskSetManager: Finished task 0.0 in stage 1.0 (TID 1) in 195 ms on 172.18.0.4 (executor 0) (1/1)
+[2026-05-04T21:44:08.665+0000] {docker.py:69} INFO - 26/05/04 21:44:08 INFO TaskSchedulerImpl: Removed TaskSet 1.0, whose tasks have all completed, from pool
+[2026-05-04T21:44:08.676+0000] {docker.py:69} INFO - 26/05/04 21:44:08 INFO DAGScheduler: ResultStage 1 (showString at <unknown>:0) finished in 0.247 s
+[2026-05-04T21:44:08.688+0000] {docker.py:69} INFO - 26/05/04 21:44:08 INFO DAGScheduler: Job 1 is finished. Cancelling potential speculative or zombie tasks for this job
+[2026-05-04T21:44:08.691+0000] {docker.py:69} INFO - 26/05/04 21:44:08 INFO TaskSchedulerImpl: Killing all running tasks in stage 1: Stage finished
+[2026-05-04T21:44:08.693+0000] {docker.py:69} INFO - 26/05/04 21:44:08 INFO DAGScheduler: Job 1 finished: showString at <unknown>:0, took 0.265322 s
+[2026-05-04T21:44:11.995+0000] {docker.py:69} INFO - 26/05/04 21:44:11 INFO CodeGenerator: Code generated in 35.547785 ms
+[2026-05-04T21:44:12.014+0000] {docker.py:69} INFO - +----------+-----------+-----+--------------------------+
+[2026-05-04T21:44:12.016+0000] {docker.py:69} INFO - |sensor_id |metric     |value|processed_at              |
+[2026-05-04T21:44:12.017+0000] {docker.py:69} INFO - +----------+-----------+-----+--------------------------+
+[2026-05-04T21:44:12.019+0000] {docker.py:69} INFO - |sensor-001|temperature|24.8 |2026-05-04 21:43:57.300996|
+[2026-05-04T21:44:12.021+0000] {docker.py:69} INFO - |sensor-002|vibration  |0.17 |2026-05-04 21:43:57.300996|
+[2026-05-04T21:44:12.023+0000] {docker.py:69} INFO - |sensor-003|pressure   |1.42 |2026-05-04 21:43:57.300996|
+[2026-05-04T21:44:12.027+0000] {docker.py:69} INFO - +----------+-----------+-----+--------------------------+
+[2026-05-04T21:44:12.801+0000] {docker.py:69} INFO - Traceback (most recent call last):
+[2026-05-04T21:44:12.803+0000] {docker.py:69} INFO -   File "/opt/spark-apps/test_write.py", line 42, in <module>
+[2026-05-04T21:44:12.805+0000] {docker.py:69} INFO -     df.write
+[2026-05-04T21:44:12.806+0000] {docker.py:69} INFO -   File "/opt/spark/python/lib/pyspark.zip/pyspark/sql/readwriter.py", line 1463, in save
+[2026-05-04T21:44:12.809+0000] {docker.py:69} INFO -   File "/opt/spark/python/lib/py4j-0.10.9.7-src.zip/py4j/java_gateway.py", line 1322, in __call__
+[2026-05-04T21:44:12.812+0000] {docker.py:69} INFO -   File "/opt/spark/python/lib/pyspark.zip/pyspark/errors/exceptions/captured.py", line 179, in deco
+[2026-05-04T21:44:12.814+0000] {docker.py:69} INFO -   File "/opt/spark/python/lib/py4j-0.10.9.7-src.zip/py4j/protocol.py", line 326, in get_return_value
+[2026-05-04T21:44:12.815+0000] {docker.py:69} INFO - py4j.protocol.Py4JJavaError
+[2026-05-04T21:44:12.817+0000] {docker.py:69} INFO - : An error occurred while calling o67.save.
+[2026-05-04T21:44:12.818+0000] {docker.py:69} INFO - : org.apache.spark.SparkClassNotFoundException: [DATA_SOURCE_NOT_FOUND] Failed to find the data source: hudi. Please find packages at `https://spark.apache.org/third-party-projects.html`.
+[2026-05-04T21:44:12.820+0000] {docker.py:69} INFO - 	at org.apache.spark.sql.errors.QueryExecutionErrors$.dataSourceNotFoundError(QueryExecutionErrors.scala:725)
+[2026-05-04T21:44:12.822+0000] {docker.py:69} INFO - 	at org.apache.spark.sql.execution.datasources.DataSource$.lookupDataSource(DataSource.scala:647)
+[2026-05-04T21:44:12.824+0000] {docker.py:69} INFO - 	at org.apache.spark.sql.execution.datasources.DataSource$.lookupDataSourceV2(DataSource.scala:697)
+[2026-05-04T21:44:12.826+0000] {docker.py:69} INFO - 	at org.apache.spark.sql.DataFrameWriter.lookupV2Provider(DataFrameWriter.scala:873)
+[2026-05-04T21:44:12.829+0000] {docker.py:69} INFO - 	at org.apache.spark.sql.DataFrameWriter.saveInternal(DataFrameWriter.scala:260)
+[2026-05-04T21:44:12.831+0000] {docker.py:69} INFO - 	at org.apache.spark.sql.DataFrameWriter.save(DataFrameWriter.scala:243)
+[2026-05-04T21:44:12.834+0000] {docker.py:69} INFO - 	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+[2026-05-04T21:44:12.835+0000] {docker.py:69} INFO - 	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(Unknown Source)
+[2026-05-04T21:44:12.837+0000] {docker.py:69} INFO - 	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(Unknown Source)
+[2026-05-04T21:44:12.839+0000] {docker.py:69} INFO - 	at java.base/java.lang.reflect.Method.invoke(Unknown Source)
+[2026-05-04T21:44:12.841+0000] {docker.py:69} INFO - 	at py4j.reflection.MethodInvoker.invoke(MethodInvoker.java:244)
+[2026-05-04T21:44:12.847+0000] {docker.py:69} INFO - 	at py4j.reflection.ReflectionEngine.invoke(ReflectionEngine.java:374)
+[2026-05-04T21:44:12.852+0000] {docker.py:69} INFO - 	at py4j.Gateway.invoke(Gateway.java:282)
+[2026-05-04T21:44:12.863+0000] {docker.py:69} INFO - 	at py4j.commands.AbstractCommand.invokeMethod(AbstractCommand.java:132)
+[2026-05-04T21:44:12.870+0000] {docker.py:69} INFO - 	at py4j.commands.CallCommand.execute(CallCommand.java:79)
+[2026-05-04T21:44:12.871+0000] {docker.py:69} INFO - 	at py4j.ClientServerConnection.waitForCommands(ClientServerConnection.java:182)
+[2026-05-04T21:44:12.873+0000] {docker.py:69} INFO - 	at py4j.ClientServerConnection.run(ClientServerConnection.java:106)
+[2026-05-04T21:44:12.875+0000] {docker.py:69} INFO - 	at java.base/java.lang.Thread.run(Unknown Source)
+[2026-05-04T21:44:12.876+0000] {docker.py:69} INFO - Caused by: java.lang.ClassNotFoundException: hudi.DefaultSource
+[2026-05-04T21:44:12.878+0000] {docker.py:69} INFO - 	at java.base/java.net.URLClassLoader.findClass(Unknown Source)
+[2026-05-04T21:44:12.881+0000] {docker.py:69} INFO - 	at java.base/java.lang.ClassLoader.loadClass(Unknown Source)
+[2026-05-04T21:44:12.884+0000] {docker.py:69} INFO - 	at java.base/java.lang.ClassLoader.loadClass(Unknown Source)
+[2026-05-04T21:44:12.887+0000] {docker.py:69} INFO - 	at org.apache.spark.sql.execution.datasources.DataSource$.$anonfun$lookupDataSource$5(DataSource.scala:633)
+[2026-05-04T21:44:12.891+0000] {docker.py:69} INFO - 	at scala.util.Try$.apply(Try.scala:213)
+[2026-05-04T21:44:12.898+0000] {docker.py:69} INFO - 	at org.apache.spark.sql.execution.datasources.DataSource$.$anonfun$lookupDataSource$4(DataSource.scala:633)
+[2026-05-04T21:44:12.904+0000] {docker.py:69} INFO - 	at scala.util.Failure.orElse(Try.scala:224)
+[2026-05-04T21:44:12.908+0000] {docker.py:69} INFO - 	at org.apache.spark.sql.execution.datasources.DataSource$.lookupDataSource(DataSource.scala:633)
+[2026-05-04T21:44:12.920+0000] {docker.py:69} INFO - 	... 16 more
+[2026-05-04T21:44:12.925+0000] {docker.py:69} INFO - 26/05/04 21:44:12 INFO SparkContext: Invoking stop() from shutdown hook
+[2026-05-04T21:44:12.926+0000] {docker.py:69} INFO - 26/05/04 21:44:12 INFO SparkContext: SparkContext is stopping with exitCode 0.
+[2026-05-04T21:44:12.927+0000] {docker.py:69} INFO - 26/05/04 21:44:12 INFO SparkUI: Stopped Spark web UI at http://3efeca1404bb:4040
+[2026-05-04T21:44:12.959+0000] {docker.py:69} INFO - 26/05/04 21:44:12 INFO StandaloneSchedulerBackend: Shutting down all executors
+[2026-05-04T21:44:12.970+0000] {docker.py:69} INFO - 26/05/04 21:44:12 INFO StandaloneSchedulerBackend$StandaloneDriverEndpoint: Asking each executor to shut down
+[2026-05-04T21:44:13.051+0000] {docker.py:69} INFO - 26/05/04 21:44:13 INFO MapOutputTrackerMasterEndpoint: MapOutputTrackerMasterEndpoint stopped!
+[2026-05-04T21:44:13.074+0000] {docker.py:69} INFO - 26/05/04 21:44:13 INFO MemoryStore: MemoryStore cleared
+[2026-05-04T21:44:13.096+0000] {docker.py:69} INFO - 26/05/04 21:44:13 INFO BlockManager: BlockManager stopped
+[2026-05-04T21:44:13.106+0000] {docker.py:69} INFO - 26/05/04 21:44:13 INFO BlockManagerMaster: BlockManagerMaster stopped
+[2026-05-04T21:44:13.116+0000] {docker.py:69} INFO - 26/05/04 21:44:13 INFO OutputCommitCoordinator$OutputCommitCoordinatorEndpoint: OutputCommitCoordinator stopped!
+[2026-05-04T21:44:13.134+0000] {docker.py:69} INFO - 26/05/04 21:44:13 INFO SparkContext: Successfully stopped SparkContext
+[2026-05-04T21:44:13.136+0000] {docker.py:69} INFO - 26/05/04 21:44:13 INFO ShutdownHookManager: Shutdown hook called
+[2026-05-04T21:44:13.138+0000] {docker.py:69} INFO - 26/05/04 21:44:13 INFO ShutdownHookManager: Deleting directory /tmp/spark-33f26351-5f2c-4f41-a0cc-d6da1fe9a7e9
+[2026-05-04T21:44:13.143+0000] {docker.py:69} INFO - 26/05/04 21:44:13 INFO ShutdownHookManager: Deleting directory /tmp/spark-580a66e2-e2d5-49e3-a6a0-81ae5b90cbef
+[2026-05-04T21:44:13.155+0000] {docker.py:69} INFO - 26/05/04 21:44:13 INFO ShutdownHookManager: Deleting directory /tmp/spark-580a66e2-e2d5-49e3-a6a0-81ae5b90cbef/pyspark-ac88eb10-2aeb-4812-a795-e654d3a7c6a3
+[2026-05-04T21:44:13.746+0000] {taskinstance.py:3313} ERROR - Task failed with exception
+Traceback (most recent call last):
+  File "/home/airflow/.local/lib/python3.11/site-packages/airflow/models/taskinstance.py", line 768, in _execute_task
+    result = _execute_callable(context=context, **execute_callable_kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.11/site-packages/airflow/models/taskinstance.py", line 734, in _execute_callable
+    return ExecutionCallableRunner(
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.11/site-packages/airflow/utils/operator_helpers.py", line 252, in run
+    return self.func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.11/site-packages/airflow/models/baseoperator.py", line 424, in wrapper
+    return func(self, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.11/site-packages/airflow/providers/docker/operators/docker.py", line 485, in execute
+    return self._run_image()
+           ^^^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.11/site-packages/airflow/providers/docker/operators/docker.py", line 362, in _run_image
+    return self._run_image_with_mounts(self.mounts, add_tmp_variable=False)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.11/site-packages/airflow/providers/docker/operators/docker.py", line 419, in _run_image_with_mounts
+    raise DockerContainerFailedException(f"Docker container failed: {result!r}", logs=log_lines)
+airflow.providers.docker.exceptions.DockerContainerFailedException: Docker container failed: {'StatusCode': 1}
+[2026-05-04T21:44:13.768+0000] {taskinstance.py:1226} INFO - Marking task as FAILED. dag_id=spark_test_write_every_5_min, task_id=run_spark_test_write, run_id=manual__2026-05-04T21:43:33.572196+00:00, execution_date=20260504T214333, start_date=20260504T214337, end_date=20260504T214413
+[2026-05-04T21:44:13.870+0000] {taskinstance.py:341} INFO - ::group::Post task execution logs
+[2026-05-04T21:44:13.873+0000] {standard_task_runner.py:124} ERROR - Failed to execute job 17 for task run_spark_test_write (Docker container failed: {'StatusCode': 1}; 297)
+Traceback (most recent call last):
+  File "/home/airflow/.local/lib/python3.11/site-packages/airflow/task/task_runner/standard_task_runner.py", line 117, in _start_by_fork
+    ret = args.func(args, dag=self.dag)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.11/site-packages/airflow/cli/cli_config.py", line 49, in command
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.11/site-packages/airflow/utils/cli.py", line 116, in wrapper
+    return f(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.11/site-packages/airflow/cli/commands/task_command.py", line 483, in task_run
+    task_return_code = _run_task_by_selected_method(args, _dag, ti)
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.11/site-packages/airflow/cli/commands/task_command.py", line 256, in _run_task_by_selected_method
+    return _run_raw_task(args, ti)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.11/site-packages/airflow/cli/commands/task_command.py", line 341, in _run_raw_task
+    return ti._run_raw_task(
+           ^^^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.11/site-packages/airflow/utils/session.py", line 97, in wrapper
+    return func(*args, session=session, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.11/site-packages/airflow/models/taskinstance.py", line 3006, in _run_raw_task
+    return _run_raw_task(
+           ^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.11/site-packages/airflow/models/taskinstance.py", line 274, in _run_raw_task
+    TaskInstance._execute_task_with_callbacks(
+  File "/home/airflow/.local/lib/python3.11/site-packages/airflow/models/taskinstance.py", line 3161, in _execute_task_with_callbacks
+    result = self._execute_task(context, task_orig)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.11/site-packages/airflow/models/taskinstance.py", line 3185, in _execute_task
+    return _execute_task(self, context, task_orig)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.11/site-packages/airflow/models/taskinstance.py", line 768, in _execute_task
+    result = _execute_callable(context=context, **execute_callable_kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.11/site-packages/airflow/models/taskinstance.py", line 734, in _execute_callable
+    return ExecutionCallableRunner(
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.11/site-packages/airflow/utils/operator_helpers.py", line 252, in run
+    return self.func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.11/site-packages/airflow/models/baseoperator.py", line 424, in wrapper
+    return func(self, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.11/site-packages/airflow/providers/docker/operators/docker.py", line 485, in execute
+    return self._run_image()
+           ^^^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.11/site-packages/airflow/providers/docker/operators/docker.py", line 362, in _run_image
+    return self._run_image_with_mounts(self.mounts, add_tmp_variable=False)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.11/site-packages/airflow/providers/docker/operators/docker.py", line 419, in _run_image_with_mounts
+    raise DockerContainerFailedException(f"Docker container failed: {result!r}", logs=log_lines)
+airflow.providers.docker.exceptions.DockerContainerFailedException: Docker container failed: {'StatusCode': 1}
+[2026-05-04T21:44:13.915+0000] {local_task_job_runner.py:266} INFO - Task exited with return code 1
+[2026-05-04T21:44:13.962+0000] {taskinstance.py:3901} INFO - 0 downstream tasks scheduled from follow-on schedule check
+[2026-05-04T21:44:13.967+0000] {local_task_job_runner.py:245} INFO - ::endgroup::

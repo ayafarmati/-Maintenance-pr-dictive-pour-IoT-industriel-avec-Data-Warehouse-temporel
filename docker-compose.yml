@@ -1,0 +1,223 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: iot-airflow-postgres
+    hostname: postgres
+    environment:
+      POSTGRES_USER: airflow
+      POSTGRES_PASSWORD: airflow
+      POSTGRES_DB: airflow
+    volumes:
+      - airflow-postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U airflow -d airflow"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - iot-platform
+
+  airflow-init:
+    image: apache/airflow:2.10.5-python3.11
+    container_name: iot-airflow-init
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      AIRFLOW__CORE__EXECUTOR: LocalExecutor
+      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres:5432/airflow
+      AIRFLOW__CORE__LOAD_EXAMPLES: "false"
+      AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: "false"
+      AIRFLOW__WEBSERVER__SECRET_KEY: iot-airflow-local-secret
+      PROJECT_HOST_PATH: C:/Users/aya/Desktop/projet_iot/-Maintenance-pr-dictive-pour-IoT-industriel-avec-Data-Warehouse-temporel
+      _AIRFLOW_WWW_USER_USERNAME: admin
+      _AIRFLOW_WWW_USER_PASSWORD: admin
+      _AIRFLOW_WWW_USER_FIRSTNAME: IoT
+      _AIRFLOW_WWW_USER_LASTNAME: Admin
+      _AIRFLOW_WWW_USER_EMAIL: admin@example.com
+    volumes:
+      - ./airflow/dags:/opt/airflow/dags
+      - ./airflow/logs:/opt/airflow/logs
+      - ./airflow/plugins:/opt/airflow/plugins
+    command:
+      - bash
+      - -c
+      - airflow db migrate && airflow users create --username "$${_AIRFLOW_WWW_USER_USERNAME}" --password "$${_AIRFLOW_WWW_USER_PASSWORD}" --firstname "$${_AIRFLOW_WWW_USER_FIRSTNAME}" --lastname "$${_AIRFLOW_WWW_USER_LASTNAME}" --role Admin --email "$${_AIRFLOW_WWW_USER_EMAIL}" || true
+    networks:
+      - iot-platform
+
+  airflow-webserver:
+    image: apache/airflow:2.10.5-python3.11
+    container_name: iot-airflow-webserver
+    hostname: airflow-webserver
+    depends_on:
+      airflow-init:
+        condition: service_completed_successfully
+    environment:
+      AIRFLOW__CORE__EXECUTOR: LocalExecutor
+      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres:5432/airflow
+      AIRFLOW__CORE__LOAD_EXAMPLES: "false"
+      AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: "false"
+      AIRFLOW__WEBSERVER__SECRET_KEY: iot-airflow-local-secret
+      PROJECT_HOST_PATH: C:/Users/aya/Desktop/projet_iot/-Maintenance-pr-dictive-pour-IoT-industriel-avec-Data-Warehouse-temporel
+    ports:
+      - "8082:8080"
+    volumes:
+      - ./airflow/dags:/opt/airflow/dags
+      - ./airflow/logs:/opt/airflow/logs
+      - ./airflow/plugins:/opt/airflow/plugins
+      - /var/run/docker.sock:/var/run/docker.sock
+    command: webserver
+    networks:
+      - iot-platform
+
+  airflow-scheduler:
+    image: apache/airflow:2.10.5-python3.11
+    container_name: iot-airflow-scheduler
+    hostname: airflow-scheduler
+    depends_on:
+      airflow-init:
+        condition: service_completed_successfully
+    environment:
+      AIRFLOW__CORE__EXECUTOR: LocalExecutor
+      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres:5432/airflow
+      AIRFLOW__CORE__LOAD_EXAMPLES: "false"
+      AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: "false"
+      AIRFLOW__WEBSERVER__SECRET_KEY: iot-airflow-local-secret
+      PROJECT_HOST_PATH: C:/Users/aya/Desktop/projet_iot/-Maintenance-pr-dictive-pour-IoT-industriel-avec-Data-Warehouse-temporel
+    user: "0:0"
+    volumes:
+      - ./airflow/dags:/opt/airflow/dags
+      - ./airflow/logs:/opt/airflow/logs
+      - ./airflow/plugins:/opt/airflow/plugins
+      - /var/run/docker.sock:/var/run/docker.sock
+    command: scheduler
+    networks:
+      - iot-platform
+
+  spark-master:
+    image: iot-spark-hudi:3.5.6-0.15.0
+    build:
+      context: ./docker/spark
+      args:
+        HUDI_VERSION: 0.15.0
+        SCALA_VERSION: 2.12
+    container_name: iot-spark-master
+    hostname: spark-master
+    command:
+      - /opt/spark/bin/spark-class
+      - org.apache.spark.deploy.master.Master
+      - --host
+      - spark-master
+      - --port
+      - "7077"
+      - --webui-port
+      - "8080"
+    ports:
+      - "7077:7077"
+      - "8080:8080"
+    volumes:
+      - ./spark/apps:/opt/spark-apps
+      - ./spark/data:/opt/spark-data
+      - ./spark/checkpoints:/opt/spark-checkpoints
+    networks:
+      - iot-platform
+
+  spark-worker:
+    image: iot-spark-hudi:3.5.6-0.15.0
+    build:
+      context: ./docker/spark
+      args:
+        HUDI_VERSION: 0.15.0
+        SCALA_VERSION: 2.12
+    container_name: iot-spark-worker
+    hostname: spark-worker
+    depends_on:
+      - spark-master
+    command:
+      - /opt/spark/bin/spark-class
+      - org.apache.spark.deploy.worker.Worker
+      - spark://spark-master:7077
+      - --cores
+      - "2"
+      - --memory
+      - 2G
+      - --webui-port
+      - "8081"
+    ports:
+      - "8081:8081"
+    volumes:
+      - ./spark/apps:/opt/spark-apps
+      - ./spark/data:/opt/spark-data
+      - ./spark/checkpoints:/opt/spark-checkpoints
+    networks:
+      - iot-platform
+
+  spark-client:
+    image: iot-spark-hudi:3.5.6-0.15.0
+    build:
+      context: ./docker/spark
+      args:
+        HUDI_VERSION: 0.15.0
+        SCALA_VERSION: 2.12
+    container_name: iot-spark-client
+    hostname: spark-client
+    depends_on:
+      - spark-master
+      - spark-worker
+    environment:
+      SPARK_MASTER_URL: spark://spark-master:7077
+      PYSPARK_PYTHON: python3
+      PYSPARK_DRIVER_PYTHON: python3
+    volumes:
+      - ./spark/apps:/opt/spark-apps
+      - ./spark/data:/opt/spark-data
+      - ./spark/checkpoints:/opt/spark-checkpoints
+    working_dir: /opt/spark-apps
+    entrypoint: ["/bin/bash", "-lc"]
+    command: ["sleep infinity"]
+    networks:
+      - iot-platform
+
+  minio:
+    image: minio/minio:latest
+    container_name: iot-minio
+    hostname: minio
+    environment:
+      MINIO_ROOT_USER: minio
+      MINIO_ROOT_PASSWORD: minio123
+    command: server /data --console-address ":9001"
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - minio-data:/data
+    networks:
+      - iot-platform
+
+  minio-mc:
+    image: minio/mc:latest
+    container_name: iot-minio-mc
+    depends_on:
+      - minio
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        set -e
+        mc alias set local http://minio:9000 minio minio123
+        mc mb -p local/iot-lake || true
+        mc policy set public local/iot-lake
+        echo "MinIO bucket ready: iot-lake"
+    networks:
+      - iot-platform
+
+networks:
+  iot-platform:
+    name: iot-platform
+    driver: bridge
+
+volumes:
+  airflow-postgres-data:
+    name: airflow-postgres-data
+  minio-data:
+    name: minio-data

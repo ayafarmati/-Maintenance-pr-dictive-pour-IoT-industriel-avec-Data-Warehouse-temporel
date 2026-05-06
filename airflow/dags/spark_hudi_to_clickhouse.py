@@ -12,15 +12,15 @@ PROJECT_HOST_PATH = os.environ["PROJECT_HOST_PATH"]
 
 
 with DAG(
-    dag_id="spark_test_write_every_5_min",
+    dag_id="spark_hudi_to_clickhouse",
     start_date=datetime(2026, 1, 1),
-    schedule="*/5 * * * *",
+    schedule=None,
     catchup=False,
     max_active_runs=1,
-    tags=["iot", "spark"],
+    tags=["iot", "spark", "hudi", "clickhouse"],
 ) as dag:
-    run_spark_test_write = DockerOperator(
-        task_id="run_spark_test_write",
+    run_hudi_to_clickhouse = DockerOperator(
+        task_id="run_hudi_to_clickhouse",
         image="iot-spark-hudi:3.5.6-0.15.0",
         api_version="auto",
         docker_url="unix://var/run/docker.sock",
@@ -30,7 +30,7 @@ with DAG(
             "--master spark://spark-master:7077 "
             "--conf spark.cores.max=2 "
             "--conf spark.executor.cores=1 "
-            "/opt/spark-apps/test_write.py"
+            "/opt/spark-apps/hudi_to_clickhouse.py"
         ),
         mounts=[
             Mount(

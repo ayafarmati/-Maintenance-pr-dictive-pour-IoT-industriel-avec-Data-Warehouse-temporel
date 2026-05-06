@@ -4,6 +4,7 @@ ARG HUDI_VERSION=0.15.0
 ARG SCALA_VERSION=2.12
 ARG HADOOP_AWS_VERSION=3.3.4
 ARG AWS_SDK_BUNDLE_VERSION=1.12.700
+ARG CLICKHOUSE_JDBC_VERSION=0.6.0
 
 USER root
 
@@ -21,5 +22,10 @@ RUN curl -fL \
     && curl -fL \
     -o /opt/spark/jars/aws-java-sdk-bundle-${AWS_SDK_BUNDLE_VERSION}.jar \
     https://repo1.maven.org/maven2/com/amazonaws/aws-java-sdk-bundle/${AWS_SDK_BUNDLE_VERSION}/aws-java-sdk-bundle-${AWS_SDK_BUNDLE_VERSION}.jar
+
+RUN curl -fL \
+    -o /opt/spark/jars/clickhouse-jdbc-${CLICKHOUSE_JDBC_VERSION}-all.jar \
+    https://repo1.maven.org/maven2/com/clickhouse/clickhouse-jdbc/${CLICKHOUSE_JDBC_VERSION}/clickhouse-jdbc-${CLICKHOUSE_JDBC_VERSION}-all.jar
+
 
 USER 185

@@ -55,6 +55,9 @@ services:
         condition: service_completed_successfully
     environment:
       AIRFLOW__CORE__EXECUTOR: LocalExecutor
+      AIRFLOW__CORE__PARALLELISM: "8"
+      AIRFLOW__CORE__MAX_ACTIVE_TASKS_PER_DAG: "4"
+      AIRFLOW__CORE__MAX_ACTIVE_RUNS_PER_DAG: "2"
       AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres:5432/airflow
       AIRFLOW__CORE__LOAD_EXAMPLES: "false"
       AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: "false"
@@ -80,6 +83,9 @@ services:
         condition: service_completed_successfully
     environment:
       AIRFLOW__CORE__EXECUTOR: LocalExecutor
+      AIRFLOW__CORE__PARALLELISM: "8"
+      AIRFLOW__CORE__MAX_ACTIVE_TASKS_PER_DAG: "4"
+      AIRFLOW__CORE__MAX_ACTIVE_RUNS_PER_DAG: "2"
       AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres:5432/airflow
       AIRFLOW__CORE__LOAD_EXAMPLES: "false"
       AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: "false"
@@ -153,6 +159,36 @@ services:
     networks:
       - iot-platform
 
+  spark-worker-2:
+    image: iot-spark-hudi:3.5.6-0.15.0
+    build:
+      context: ./docker/spark
+      args:
+        HUDI_VERSION: 0.15.0
+        SCALA_VERSION: 2.12
+    container_name: iot-spark-worker-2
+    hostname: spark-worker-2
+    depends_on:
+      - spark-master
+    command:
+      - /opt/spark/bin/spark-class
+      - org.apache.spark.deploy.worker.Worker
+      - spark://spark-master:7077
+      - --cores
+      - "2"
+      - --memory
+      - 2G
+      - --webui-port
+      - "8083"
+    ports:
+      - "8083:8083"
+    volumes:
+      - ./spark/apps:/opt/spark-apps
+      - ./spark/data:/opt/spark-data
+      - ./spark/checkpoints:/opt/spark-checkpoints
+    networks:
+      - iot-platform
+
   spark-client:
     image: iot-spark-hudi:3.5.6-0.15.0
     build:
@@ -211,6 +247,76 @@ services:
     networks:
       - iot-platform
 
+  mosquitto:
+    image: eclipse-mosquitto:2.0
+    container_name: iot-mosquitto
+    hostname: mosquitto
+    depends_on:
+      - mosquitto-init
+    ports:
+      - "1883:1883"
+      - "9002:9001"
+    volumes:
+      - ./docker/mosquitto/config:/mosquitto/config
+      - mosquitto-data:/mosquitto/data
+      - mosquitto-logs:/mosquitto/log
+    networks:
+      - iot-platform
+
+  mosquitto-init:
+    image: eclipse-mosquitto:2.0
+    container_name: iot-mosquitto-init
+    user: "0:0"
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        set -e
+        mkdir -p /mosquitto/config
+        if [ ! -f /mosquitto/config/passwords.txt ]; then
+          touch /mosquitto/config/passwords.txt
+          mosquitto_passwd -b /mosquitto/config/passwords.txt iot iot123
+          echo "Mosquitto user created: iot"
+        fi
+        chmod 700 /mosquitto/config/passwords.txt
+    volumes:
+      - ./docker/mosquitto/config:/mosquitto/config
+    networks:
+      - iot-platform
+
+  mqtt-bridge:
+    build:
+      context: ./docker/mqtt-bridge
+    container_name: iot-mqtt-bridge
+    depends_on:
+      - mosquitto
+    environment:
+      MQTT_HOST: mosquitto
+      MQTT_PORT: "1883"
+      MQTT_TOPIC: iot/sensors
+      MQTT_USER: iot
+      MQTT_PASSWORD: iot123
+      OUTPUT_DIR: /data/mqtt_raw
+    volumes:
+      - ./spark/data:/data
+    networks:
+      - iot-platform
+
+  clickhouse:
+    image: clickhouse/clickhouse-server:24.3
+    container_name: iot-clickhouse
+    hostname: clickhouse
+    environment:
+      CLICKHOUSE_DB: iot
+      CLICKHOUSE_USER: iot
+      CLICKHOUSE_PASSWORD: iot123
+    ports:
+      - "8123:8123"
+      - "9003:9000"
+    volumes:
+      - clickhouse-data:/var/lib/clickhouse
+    networks:
+      - iot-platform
+
 networks:
   iot-platform:
     name: iot-platform
@@ -221,3 +327,9 @@ volumes:
     name: airflow-postgres-data
   minio-data:
     name: minio-data
+  mosquitto-data:
+    name: mosquitto-data
+  mosquitto-logs:
+    name: mosquitto-logs
+  clickhouse-data:
+    name: clickhouse-data

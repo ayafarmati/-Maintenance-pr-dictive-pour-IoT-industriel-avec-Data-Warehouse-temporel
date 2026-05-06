@@ -1,0 +1,28 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.venv/
+
+# VS Code
+.vscode/
+
+# Env files
+.env
+.env.*
+
+# Airflow
+airflow/logs/
+airflow/__pycache__/
+
+# Spark runtime data
+spark/data/
+spark/checkpoints/
+
+# Local Spark logs
+spark/logs/
+
+# OS files
+.DS_Store
+Thumbs.db

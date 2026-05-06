@@ -1,1 +1,0 @@
-Airflow is ready for the IoT pipeline.

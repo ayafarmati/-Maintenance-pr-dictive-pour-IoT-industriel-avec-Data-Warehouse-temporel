@@ -28,8 +28,8 @@ with DAG(
         command=(
             "/opt/spark/bin/spark-submit "
             "--master spark://spark-master:7077 "
-            "--conf spark.cores.max=2 "
-            "--conf spark.executor.cores=1 "
+            "--conf spark.cores.max=4 "
+            "--conf spark.executor.cores=2 "
             "/opt/spark-apps/mqtt_to_hudi.py"
         ),
         mounts=[

@@ -1,26 +1,28 @@
 from __future__ import annotations
 
 import os
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from airflow import DAG
+from airflow.datasets import Dataset
 from airflow.providers.docker.operators.docker import DockerOperator
 from docker.types import Mount
 
-
 PROJECT_HOST_PATH = os.environ["PROJECT_HOST_PATH"]
 
-
 with DAG(
-    dag_id="spark_hudi_to_clickhouse",
+    dag_id="spark_bronze_to_silver",
     start_date=datetime(2026, 1, 1),
-    schedule=None,
+    schedule=timedelta(minutes=30), # S'exécute toutes les 30 minutes
     catchup=False,
     max_active_runs=1,
-    tags=["iot", "spark", "hudi", "clickhouse"],
+    tags=["iot", "spark", "silver", "feature_store"],
 ) as dag:
-    run_hudi_to_clickhouse = DockerOperator(
-        task_id="run_hudi_to_clickhouse",
+
+    silver_dataset = Dataset("s3a://iot-lake/hudi/slv_sensor_features")
+    
+    run_bronze_to_silver = DockerOperator(
+        task_id="run_bronze_to_silver",
         image="iot-spark-hudi:3.5.6-0.15.0",
         api_version="auto",
         docker_url="unix://var/run/docker.sock",
@@ -28,9 +30,10 @@ with DAG(
         command=(
             "/opt/spark/bin/spark-submit "
             "--master spark://spark-master:7077 "
-            "--conf spark.cores.max=2 "
-            "--conf spark.executor.cores=1 "
-            "/opt/spark-apps/hudi_to_clickhouse.py"
+            "--conf spark.cores.max=4 "
+            "--conf spark.executor.cores=2 "
+            "--conf spark.executor.memory=1g "
+            "/opt/spark-apps/bronze_to_silver.py"
         ),
         mounts=[
             Mount(
@@ -43,12 +46,8 @@ with DAG(
                 target="/opt/spark-data",
                 type="bind",
             ),
-            Mount(
-                source=f"{PROJECT_HOST_PATH}/spark/checkpoints",
-                target="/opt/spark-checkpoints",
-                type="bind",
-            ),
         ],
         mount_tmp_dir=False,
         auto_remove="success",
+        outlets=[silver_dataset],
     )

@@ -1,4 +1,0 @@
-sensor_id,metric,value,processed_at
-sensor-001,temperature,24.8,2026-05-04T21:40:21.468Z
-sensor-002,vibration,0.17,2026-05-04T21:40:21.468Z
-sensor-003,pressure,1.42,2026-05-04T21:40:21.468Z

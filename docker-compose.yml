@@ -145,7 +145,7 @@ services:
       - org.apache.spark.deploy.worker.Worker
       - spark://spark-master:7077
       - --cores
-      - "2"
+      - "4"
       - --memory
       - 2G
       - --webui-port
@@ -175,7 +175,7 @@ services:
       - org.apache.spark.deploy.worker.Worker
       - spark://spark-master:7077
       - --cores
-      - "2"
+      - "4"
       - --memory
       - 2G
       - --webui-port
@@ -188,6 +188,187 @@ services:
       - ./spark/checkpoints:/opt/spark-checkpoints
     networks:
       - iot-platform
+
+  spark-worker-3:
+    image: iot-spark-hudi:3.5.6-0.15.0
+    build:
+      context: ./docker/spark
+      args:
+        HUDI_VERSION: 0.15.0
+        SCALA_VERSION: 2.12
+    container_name: iot-spark-worker-3
+    hostname: spark-worker-3
+    depends_on:
+      - spark-master
+    command:
+      - /opt/spark/bin/spark-class
+      - org.apache.spark.deploy.worker.Worker
+      - spark://spark-master:7077
+      - --cores
+      - "4"
+      - --memory
+      - 2G
+      - --webui-port
+      - "8084"
+    ports:
+      - "8084:8084"
+    volumes:
+      - ./spark/apps:/opt/spark-apps
+      - ./spark/data:/opt/spark-data
+      - ./spark/checkpoints:/opt/spark-checkpoints
+    networks:
+      - iot-platform
+
+  spark-worker-4:
+    image: iot-spark-hudi:3.5.6-0.15.0
+    build:
+      context: ./docker/spark
+      args:
+        HUDI_VERSION: 0.15.0
+        SCALA_VERSION: 2.12
+    container_name: iot-spark-worker-4
+    hostname: spark-worker-4
+    depends_on:
+      - spark-master
+    command:
+      - /opt/spark/bin/spark-class
+      - org.apache.spark.deploy.worker.Worker
+      - spark://spark-master:7077
+      - --cores
+      - "4"
+      - --memory
+      - 2G
+      - --webui-port
+      - "8085"
+    ports:
+      - "8085:8085"
+    volumes:
+      - ./spark/apps:/opt/spark-apps
+      - ./spark/data:/opt/spark-data
+      - ./spark/checkpoints:/opt/spark-checkpoints
+    networks:
+      - iot-platform
+
+  spark-worker-5:
+    image: iot-spark-hudi:3.5.6-0.15.0
+    build:
+      context: ./docker/spark
+      args:
+        HUDI_VERSION: 0.15.0
+        SCALA_VERSION: 2.12
+    container_name: iot-spark-worker-5
+    hostname: spark-worker-5
+    depends_on:
+      - spark-master
+    command:
+      - /opt/spark/bin/spark-class
+      - org.apache.spark.deploy.worker.Worker
+      - spark://spark-master:7077
+      - --cores
+      - "4"
+      - --memory
+      - 2G
+      - --webui-port
+      - "8086"
+    ports:
+      - "8086:8086"
+    volumes:
+      - ./spark/apps:/opt/spark-apps
+      - ./spark/data:/opt/spark-data
+      - ./spark/checkpoints:/opt/spark-checkpoints
+    networks:
+      - iot-platform
+
+  spark-worker-6:
+    image: iot-spark-hudi:3.5.6-0.15.0
+    build:
+      context: ./docker/spark
+      args:
+        HUDI_VERSION: 0.15.0
+        SCALA_VERSION: 2.12
+    container_name: iot-spark-worker-6
+    hostname: spark-worker-6
+    depends_on:
+      - spark-master
+    command:
+      - /opt/spark/bin/spark-class
+      - org.apache.spark.deploy.worker.Worker
+      - spark://spark-master:7077
+      - --cores
+      - "4"
+      - --memory
+      - 2G
+      - --webui-port
+      - "8087"
+    ports:
+      - "8087:8087"
+    volumes:
+      - ./spark/apps:/opt/spark-apps
+      - ./spark/data:/opt/spark-data
+      - ./spark/checkpoints:/opt/spark-checkpoints
+    networks:
+      - iot-platform
+
+  spark-worker-7:
+    image: iot-spark-hudi:3.5.6-0.15.0
+    build:
+      context: ./docker/spark
+      args:
+        HUDI_VERSION: 0.15.0
+        SCALA_VERSION: 2.12
+    container_name: iot-spark-worker-7
+    hostname: spark-worker-7
+    depends_on:
+      - spark-master
+    command:
+      - /opt/spark/bin/spark-class
+      - org.apache.spark.deploy.worker.Worker
+      - spark://spark-master:7077
+      - --cores
+      - "4"
+      - --memory
+      - 2G
+      - --webui-port
+      - "8088"
+    ports:
+      - "8088:8088"
+    volumes:
+      - ./spark/apps:/opt/spark-apps
+      - ./spark/data:/opt/spark-data
+      - ./spark/checkpoints:/opt/spark-checkpoints
+    networks:
+      - iot-platform
+
+  spark-worker-8:
+    image: iot-spark-hudi:3.5.6-0.15.0
+    build:
+      context: ./docker/spark
+      args:
+        HUDI_VERSION: 0.15.0
+        SCALA_VERSION: 2.12
+    container_name: iot-spark-worker-8
+    hostname: spark-worker-8
+    depends_on:
+      - spark-master
+    command:
+      - /opt/spark/bin/spark-class
+      - org.apache.spark.deploy.worker.Worker
+      - spark://spark-master:7077
+      - --cores
+      - "4"
+      - --memory
+      - 2G
+      - --webui-port
+      - "8089"
+    ports:
+      - "8089:8089"
+    volumes:
+      - ./spark/apps:/opt/spark-apps
+      - ./spark/data:/opt/spark-data
+      - ./spark/checkpoints:/opt/spark-checkpoints
+    networks:
+      - iot-platform
+
 
   spark-client:
     image: iot-spark-hudi:3.5.6-0.15.0
@@ -254,7 +435,7 @@ services:
     depends_on:
       - mosquitto-init
     ports:
-      - "1883:1883"
+      - "1884:1883"
       - "9002:9001"
     volumes:
       - ./docker/mosquitto/config:/mosquitto/config
@@ -296,6 +477,7 @@ services:
       MQTT_USER: iot
       MQTT_PASSWORD: iot123
       OUTPUT_DIR: /data/mqtt_raw
+      LOG_EVERY: "1"
     volumes:
       - ./spark/data:/data
     networks:
@@ -317,6 +499,57 @@ services:
     networks:
       - iot-platform
 
+  mlflow:
+    image: ghcr.io/mlflow/mlflow:v2.13.1
+    container_name: iot-mlflow
+    hostname: mlflow
+    environment:
+      MLFLOW_S3_ENDPOINT_URL: http://minio:9000
+      AWS_ACCESS_KEY_ID: minio
+      AWS_SECRET_ACCESS_KEY: minio123
+    command:
+      - /bin/sh
+      - -c
+      - |
+        mlflow server \
+          --backend-store-uri sqlite:////mlflow/mlflow.db \
+          --default-artifact-root s3://iot-lake/mlflow \
+          --host 0.0.0.0 \
+          --port 5000
+    ports:
+      - "5000:5000"
+    volumes:
+      - mlflow-data:/mlflow
+    depends_on:
+      - minio
+    networks:
+      - iot-platform
+
+  ml-train:
+    image: python:3.11-slim
+    container_name: iot-ml-train
+    working_dir: /app
+    environment:
+      MLFLOW_TRACKING_URI: http://mlflow:5000
+      MLFLOW_S3_ENDPOINT_URL: http://minio:9000
+      AWS_ACCESS_KEY_ID: minio
+      AWS_SECRET_ACCESS_KEY: minio123
+      TRAIN_DATA_URI: s3://iot-lake/datasets/train_FD001_avec_RUL.csv
+      TRAIN_DATA_DELIMITER: ";"
+    volumes:
+      - ./ml:/app
+    command:
+      - /bin/sh
+      - -c
+      - |
+        pip install --no-cache-dir -r /app/requirements.txt && \
+        python /app/train_xgboost.py
+    depends_on:
+      - mlflow
+      - minio
+    networks:
+      - iot-platform
+
 networks:
   iot-platform:
     name: iot-platform
@@ -333,3 +566,5 @@ volumes:
     name: mosquitto-logs
   clickhouse-data:
     name: clickhouse-data
+  mlflow-data:
+    name: mlflow-data

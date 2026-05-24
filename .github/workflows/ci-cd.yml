@@ -12,8 +12,9 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  # IMAGE_NAME sera automatiquement remplacé par le nom de votre repo (ex: username/repo)
-  IMAGE_NAME: ${{ github.repository }}
+  # Docker interdit les noms d'images qui commencent par un tiret. 
+  # On utilise donc un nom personnalisé propre au lieu du nom du repo GitHub.
+  IMAGE_NAME: ${{ github.repository_owner }}/iot-predictive-maintenance
 
 jobs:
   lint-and-validate:

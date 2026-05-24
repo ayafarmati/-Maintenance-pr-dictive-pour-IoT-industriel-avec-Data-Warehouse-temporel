@@ -1,0 +1,570 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: iot-airflow-postgres
+    hostname: postgres
+    environment:
+      POSTGRES_USER: airflow
+      POSTGRES_PASSWORD: airflow
+      POSTGRES_DB: airflow
+    volumes:
+      - airflow-postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U airflow -d airflow"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - iot-platform
+
+  airflow-init:
+    image: apache/airflow:2.10.5-python3.11
+    container_name: iot-airflow-init
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      AIRFLOW__CORE__EXECUTOR: LocalExecutor
+      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres:5432/airflow
+      AIRFLOW__CORE__LOAD_EXAMPLES: "false"
+      AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: "false"
+      AIRFLOW__WEBSERVER__SECRET_KEY: iot-airflow-local-secret
+      PROJECT_HOST_PATH: C:/Users/aya/Desktop/projet_iot/-Maintenance-pr-dictive-pour-IoT-industriel-avec-Data-Warehouse-temporel
+      _AIRFLOW_WWW_USER_USERNAME: admin
+      _AIRFLOW_WWW_USER_PASSWORD: admin
+      _AIRFLOW_WWW_USER_FIRSTNAME: IoT
+      _AIRFLOW_WWW_USER_LASTNAME: Admin
+      _AIRFLOW_WWW_USER_EMAIL: admin@example.com
+    volumes:
+      - ./airflow/dags:/opt/airflow/dags
+      - ./airflow/logs:/opt/airflow/logs
+      - ./airflow/plugins:/opt/airflow/plugins
+    command:
+      - bash
+      - -c
+      - airflow db migrate && airflow users create --username "$${_AIRFLOW_WWW_USER_USERNAME}" --password "$${_AIRFLOW_WWW_USER_PASSWORD}" --firstname "$${_AIRFLOW_WWW_USER_FIRSTNAME}" --lastname "$${_AIRFLOW_WWW_USER_LASTNAME}" --role Admin --email "$${_AIRFLOW_WWW_USER_EMAIL}" || true
+    networks:
+      - iot-platform
+
+  airflow-webserver:
+    image: apache/airflow:2.10.5-python3.11
+    container_name: iot-airflow-webserver
+    hostname: airflow-webserver
+    depends_on:
+      airflow-init:
+        condition: service_completed_successfully
+    environment:
+      AIRFLOW__CORE__EXECUTOR: LocalExecutor
+      AIRFLOW__CORE__PARALLELISM: "8"
+      AIRFLOW__CORE__MAX_ACTIVE_TASKS_PER_DAG: "4"
+      AIRFLOW__CORE__MAX_ACTIVE_RUNS_PER_DAG: "2"
+      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres:5432/airflow
+      AIRFLOW__CORE__LOAD_EXAMPLES: "false"
+      AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: "false"
+      AIRFLOW__WEBSERVER__SECRET_KEY: iot-airflow-local-secret
+      PROJECT_HOST_PATH: C:/Users/aya/Desktop/projet_iot/-Maintenance-pr-dictive-pour-IoT-industriel-avec-Data-Warehouse-temporel
+    ports:
+      - "8082:8080"
+    volumes:
+      - ./airflow/dags:/opt/airflow/dags
+      - ./airflow/logs:/opt/airflow/logs
+      - ./airflow/plugins:/opt/airflow/plugins
+      - /var/run/docker.sock:/var/run/docker.sock
+    command: webserver
+    networks:
+      - iot-platform
+
+  airflow-scheduler:
+    image: apache/airflow:2.10.5-python3.11
+    container_name: iot-airflow-scheduler
+    hostname: airflow-scheduler
+    depends_on:
+      airflow-init:
+        condition: service_completed_successfully
+    environment:
+      AIRFLOW__CORE__EXECUTOR: LocalExecutor
+      AIRFLOW__CORE__PARALLELISM: "8"
+      AIRFLOW__CORE__MAX_ACTIVE_TASKS_PER_DAG: "4"
+      AIRFLOW__CORE__MAX_ACTIVE_RUNS_PER_DAG: "2"
+      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres:5432/airflow
+      AIRFLOW__CORE__LOAD_EXAMPLES: "false"
+      AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: "false"
+      AIRFLOW__WEBSERVER__SECRET_KEY: iot-airflow-local-secret
+      PROJECT_HOST_PATH: C:/Users/aya/Desktop/projet_iot/-Maintenance-pr-dictive-pour-IoT-industriel-avec-Data-Warehouse-temporel
+    user: "0:0"
+    volumes:
+      - ./airflow/dags:/opt/airflow/dags
+      - ./airflow/logs:/opt/airflow/logs
+      - ./airflow/plugins:/opt/airflow/plugins
+      - /var/run/docker.sock:/var/run/docker.sock
+    command: scheduler
+    networks:
+      - iot-platform
+
+  spark-master:
+    image: iot-spark-hudi:3.5.6-0.15.0
+    build:
+      context: ./docker/spark
+      args:
+        HUDI_VERSION: 0.15.0
+        SCALA_VERSION: 2.12
+    container_name: iot-spark-master
+    hostname: spark-master
+    command:
+      - /opt/spark/bin/spark-class
+      - org.apache.spark.deploy.master.Master
+      - --host
+      - spark-master
+      - --port
+      - "7077"
+      - --webui-port
+      - "8080"
+    ports:
+      - "7077:7077"
+      - "8080:8080"
+    volumes:
+      - ./spark/apps:/opt/spark-apps
+      - ./spark/data:/opt/spark-data
+      - ./spark/checkpoints:/opt/spark-checkpoints
+    networks:
+      - iot-platform
+
+  spark-worker:
+    image: iot-spark-hudi:3.5.6-0.15.0
+    build:
+      context: ./docker/spark
+      args:
+        HUDI_VERSION: 0.15.0
+        SCALA_VERSION: 2.12
+    container_name: iot-spark-worker
+    hostname: spark-worker
+    depends_on:
+      - spark-master
+    command:
+      - /opt/spark/bin/spark-class
+      - org.apache.spark.deploy.worker.Worker
+      - spark://spark-master:7077
+      - --cores
+      - "4"
+      - --memory
+      - 2G
+      - --webui-port
+      - "8081"
+    ports:
+      - "8081:8081"
+    volumes:
+      - ./spark/apps:/opt/spark-apps
+      - ./spark/data:/opt/spark-data
+      - ./spark/checkpoints:/opt/spark-checkpoints
+    networks:
+      - iot-platform
+
+  spark-worker-2:
+    image: iot-spark-hudi:3.5.6-0.15.0
+    build:
+      context: ./docker/spark
+      args:
+        HUDI_VERSION: 0.15.0
+        SCALA_VERSION: 2.12
+    container_name: iot-spark-worker-2
+    hostname: spark-worker-2
+    depends_on:
+      - spark-master
+    command:
+      - /opt/spark/bin/spark-class
+      - org.apache.spark.deploy.worker.Worker
+      - spark://spark-master:7077
+      - --cores
+      - "4"
+      - --memory
+      - 2G
+      - --webui-port
+      - "8083"
+    ports:
+      - "8083:8083"
+    volumes:
+      - ./spark/apps:/opt/spark-apps
+      - ./spark/data:/opt/spark-data
+      - ./spark/checkpoints:/opt/spark-checkpoints
+    networks:
+      - iot-platform
+
+  spark-worker-3:
+    image: iot-spark-hudi:3.5.6-0.15.0
+    build:
+      context: ./docker/spark
+      args:
+        HUDI_VERSION: 0.15.0
+        SCALA_VERSION: 2.12
+    container_name: iot-spark-worker-3
+    hostname: spark-worker-3
+    depends_on:
+      - spark-master
+    command:
+      - /opt/spark/bin/spark-class
+      - org.apache.spark.deploy.worker.Worker
+      - spark://spark-master:7077
+      - --cores
+      - "4"
+      - --memory
+      - 2G
+      - --webui-port
+      - "8084"
+    ports:
+      - "8084:8084"
+    volumes:
+      - ./spark/apps:/opt/spark-apps
+      - ./spark/data:/opt/spark-data
+      - ./spark/checkpoints:/opt/spark-checkpoints
+    networks:
+      - iot-platform
+
+  spark-worker-4:
+    image: iot-spark-hudi:3.5.6-0.15.0
+    build:
+      context: ./docker/spark
+      args:
+        HUDI_VERSION: 0.15.0
+        SCALA_VERSION: 2.12
+    container_name: iot-spark-worker-4
+    hostname: spark-worker-4
+    depends_on:
+      - spark-master
+    command:
+      - /opt/spark/bin/spark-class
+      - org.apache.spark.deploy.worker.Worker
+      - spark://spark-master:7077
+      - --cores
+      - "4"
+      - --memory
+      - 2G
+      - --webui-port
+      - "8085"
+    ports:
+      - "8085:8085"
+    volumes:
+      - ./spark/apps:/opt/spark-apps
+      - ./spark/data:/opt/spark-data
+      - ./spark/checkpoints:/opt/spark-checkpoints
+    networks:
+      - iot-platform
+
+  spark-worker-5:
+    image: iot-spark-hudi:3.5.6-0.15.0
+    build:
+      context: ./docker/spark
+      args:
+        HUDI_VERSION: 0.15.0
+        SCALA_VERSION: 2.12
+    container_name: iot-spark-worker-5
+    hostname: spark-worker-5
+    depends_on:
+      - spark-master
+    command:
+      - /opt/spark/bin/spark-class
+      - org.apache.spark.deploy.worker.Worker
+      - spark://spark-master:7077
+      - --cores
+      - "4"
+      - --memory
+      - 2G
+      - --webui-port
+      - "8086"
+    ports:
+      - "8086:8086"
+    volumes:
+      - ./spark/apps:/opt/spark-apps
+      - ./spark/data:/opt/spark-data
+      - ./spark/checkpoints:/opt/spark-checkpoints
+    networks:
+      - iot-platform
+
+  spark-worker-6:
+    image: iot-spark-hudi:3.5.6-0.15.0
+    build:
+      context: ./docker/spark
+      args:
+        HUDI_VERSION: 0.15.0
+        SCALA_VERSION: 2.12
+    container_name: iot-spark-worker-6
+    hostname: spark-worker-6
+    depends_on:
+      - spark-master
+    command:
+      - /opt/spark/bin/spark-class
+      - org.apache.spark.deploy.worker.Worker
+      - spark://spark-master:7077
+      - --cores
+      - "4"
+      - --memory
+      - 2G
+      - --webui-port
+      - "8087"
+    ports:
+      - "8087:8087"
+    volumes:
+      - ./spark/apps:/opt/spark-apps
+      - ./spark/data:/opt/spark-data
+      - ./spark/checkpoints:/opt/spark-checkpoints
+    networks:
+      - iot-platform
+
+  spark-worker-7:
+    image: iot-spark-hudi:3.5.6-0.15.0
+    build:
+      context: ./docker/spark
+      args:
+        HUDI_VERSION: 0.15.0
+        SCALA_VERSION: 2.12
+    container_name: iot-spark-worker-7
+    hostname: spark-worker-7
+    depends_on:
+      - spark-master
+    command:
+      - /opt/spark/bin/spark-class
+      - org.apache.spark.deploy.worker.Worker
+      - spark://spark-master:7077
+      - --cores
+      - "4"
+      - --memory
+      - 2G
+      - --webui-port
+      - "8088"
+    ports:
+      - "8088:8088"
+    volumes:
+      - ./spark/apps:/opt/spark-apps
+      - ./spark/data:/opt/spark-data
+      - ./spark/checkpoints:/opt/spark-checkpoints
+    networks:
+      - iot-platform
+
+  spark-worker-8:
+    image: iot-spark-hudi:3.5.6-0.15.0
+    build:
+      context: ./docker/spark
+      args:
+        HUDI_VERSION: 0.15.0
+        SCALA_VERSION: 2.12
+    container_name: iot-spark-worker-8
+    hostname: spark-worker-8
+    depends_on:
+      - spark-master
+    command:
+      - /opt/spark/bin/spark-class
+      - org.apache.spark.deploy.worker.Worker
+      - spark://spark-master:7077
+      - --cores
+      - "4"
+      - --memory
+      - 2G
+      - --webui-port
+      - "8089"
+    ports:
+      - "8089:8089"
+    volumes:
+      - ./spark/apps:/opt/spark-apps
+      - ./spark/data:/opt/spark-data
+      - ./spark/checkpoints:/opt/spark-checkpoints
+    networks:
+      - iot-platform
+
+
+  spark-client:
+    image: iot-spark-hudi:3.5.6-0.15.0
+    build:
+      context: ./docker/spark
+      args:
+        HUDI_VERSION: 0.15.0
+        SCALA_VERSION: 2.12
+    container_name: iot-spark-client
+    hostname: spark-client
+    depends_on:
+      - spark-master
+      - spark-worker
+    environment:
+      SPARK_MASTER_URL: spark://spark-master:7077
+      PYSPARK_PYTHON: python3
+      PYSPARK_DRIVER_PYTHON: python3
+    volumes:
+      - ./spark/apps:/opt/spark-apps
+      - ./spark/data:/opt/spark-data
+      - ./spark/checkpoints:/opt/spark-checkpoints
+    working_dir: /opt/spark-apps
+    entrypoint: ["/bin/bash", "-lc"]
+    command: ["sleep infinity"]
+    networks:
+      - iot-platform
+
+  minio:
+    image: minio/minio:latest
+    container_name: iot-minio
+    hostname: minio
+    environment:
+      MINIO_ROOT_USER: minio
+      MINIO_ROOT_PASSWORD: minio123
+    command: server /data --console-address ":9001"
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - minio-data:/data
+    networks:
+      - iot-platform
+
+  minio-mc:
+    image: minio/mc:latest
+    container_name: iot-minio-mc
+    depends_on:
+      - minio
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        set -e
+        mc alias set local http://minio:9000 minio minio123
+        mc mb -p local/iot-lake || true
+        mc policy set public local/iot-lake
+        echo "MinIO bucket ready: iot-lake"
+    networks:
+      - iot-platform
+
+  mosquitto:
+    image: eclipse-mosquitto:2.0
+    container_name: iot-mosquitto
+    hostname: mosquitto
+    depends_on:
+      - mosquitto-init
+    ports:
+      - "1884:1883"
+      - "9002:9001"
+    volumes:
+      - ./docker/mosquitto/config:/mosquitto/config
+      - mosquitto-data:/mosquitto/data
+      - mosquitto-logs:/mosquitto/log
+    networks:
+      - iot-platform
+
+  mosquitto-init:
+    image: eclipse-mosquitto:2.0
+    container_name: iot-mosquitto-init
+    user: "0:0"
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        set -e
+        mkdir -p /mosquitto/config
+        if [ ! -f /mosquitto/config/passwords.txt ]; then
+          touch /mosquitto/config/passwords.txt
+          mosquitto_passwd -b /mosquitto/config/passwords.txt iot iot123
+          echo "Mosquitto user created: iot"
+        fi
+        chmod 700 /mosquitto/config/passwords.txt
+    volumes:
+      - ./docker/mosquitto/config:/mosquitto/config
+    networks:
+      - iot-platform
+
+  mqtt-bridge:
+    build:
+      context: ./docker/mqtt-bridge
+    container_name: iot-mqtt-bridge
+    depends_on:
+      - mosquitto
+    environment:
+      MQTT_HOST: mosquitto
+      MQTT_PORT: "1883"
+      MQTT_TOPIC: iot/sensors
+      MQTT_USER: iot
+      MQTT_PASSWORD: iot123
+      OUTPUT_DIR: /data/mqtt_raw
+      LOG_EVERY: "1"
+    volumes:
+      - ./spark/data:/data
+    networks:
+      - iot-platform
+
+  clickhouse:
+    image: clickhouse/clickhouse-server:24.3
+    container_name: iot-clickhouse
+    hostname: clickhouse
+    environment:
+      CLICKHOUSE_DB: iot
+      CLICKHOUSE_USER: iot
+      CLICKHOUSE_PASSWORD: iot123
+    ports:
+      - "8123:8123"
+      - "9003:9000"
+    volumes:
+      - clickhouse-data:/var/lib/clickhouse
+    networks:
+      - iot-platform
+
+  mlflow:
+    image: ghcr.io/mlflow/mlflow:v2.13.1
+    container_name: iot-mlflow
+    hostname: mlflow
+    environment:
+      MLFLOW_S3_ENDPOINT_URL: http://minio:9000
+      AWS_ACCESS_KEY_ID: minio
+      AWS_SECRET_ACCESS_KEY: minio123
+    command:
+      - /bin/sh
+      - -c
+      - |
+        mlflow server \
+          --backend-store-uri sqlite:////mlflow/mlflow.db \
+          --default-artifact-root s3://iot-lake/mlflow \
+          --host 0.0.0.0 \
+          --port 5000
+    ports:
+      - "5000:5000"
+    volumes:
+      - mlflow-data:/mlflow
+    depends_on:
+      - minio
+    networks:
+      - iot-platform
+
+  ml-train:
+    image: python:3.11-slim
+    container_name: iot-ml-train
+    working_dir: /app
+    environment:
+      MLFLOW_TRACKING_URI: http://mlflow:5000
+      MLFLOW_S3_ENDPOINT_URL: http://minio:9000
+      AWS_ACCESS_KEY_ID: minio
+      AWS_SECRET_ACCESS_KEY: minio123
+      TRAIN_DATA_URI: s3://iot-lake/datasets/train_FD001_avec_RUL.csv
+      TRAIN_DATA_DELIMITER: ";"
+    volumes:
+      - ./ml:/app
+    command:
+      - /bin/sh
+      - -c
+      - |
+        pip install --no-cache-dir -r /app/requirements.txt && \
+        python /app/train_xgboost.py
+    depends_on:
+      - mlflow
+      - minio
+    networks:
+      - iot-platform
+
+networks:
+  iot-platform:
+    name: iot-platform
+    driver: bridge
+
+volumes:
+  airflow-postgres-data:
+    name: airflow-postgres-data
+  minio-data:
+    name: minio-data
+  mosquitto-data:
+    name: mosquitto-data
+  mosquitto-logs:
+    name: mosquitto-logs
+  clickhouse-data:
+    name: clickhouse-data
+  mlflow-data:
+    name: mlflow-data

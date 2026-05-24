@@ -1,0 +1,95 @@
+name: Data Engineering CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+env:
+  REGISTRY: ghcr.io
+  # IMAGE_NAME sera automatiquement remplacé par le nom de votre repo (ex: username/repo)
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  lint-and-validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install Linting Tools & Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install black flake8 apache-airflow pandas pyspark evidently scipy xgboost
+
+      - name: Check code formatting with Black
+        # continue-on-error pour ne pas bloquer le pipeline au début si le code n'est pas formaté
+        continue-on-error: true
+        run: |
+          black --check airflow/dags/ spark/apps/ ml/ tools/
+
+      - name: Lint with Flake8
+        run: |
+          # Arrête le build uniquement s'il y a des erreurs de syntaxe Python critiques
+          flake8 airflow/dags/ spark/apps/ ml/ tools/ --count --select=E9,F63,F7,F82 --show-source --statistics
+          # Avertissements pour la complexité et la longueur des lignes (ne bloque pas le build)
+          flake8 airflow/dags/ spark/apps/ ml/ tools/ --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+
+      - name: Validate Airflow DAGs Integrity
+        run: |
+          python -c "from airflow.models import DagBag; d = DagBag(dag_folder='airflow/dags/', include_examples=False); assert len(d.import_errors) == 0, f'DAG import errors found: {d.import_errors}'"
+
+  build-and-push-docker:
+    needs: lint-and-validate
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Log in to GitHub Container Registry (GHCR)
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata for Spark Hudi Image
+        id: meta-spark
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-spark-hudi
+
+      - name: Build and push Spark Hudi Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./docker/spark
+          # Ne pousse l'image que si ce n'est pas une Pull Request (donc un merge sur main)
+          push: ${{ github.event_name != 'pull_request' }}
+          tags: ${{ steps.meta-spark.outputs.tags }}
+          labels: ${{ steps.meta-spark.outputs.labels }}
+
+      - name: Extract metadata for MQTT Bridge Image
+        id: meta-mqtt
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-mqtt-bridge
+
+      - name: Build and push MQTT Bridge Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./docker/mqtt-bridge
+          push: ${{ github.event_name != 'pull_request' }}
+          tags: ${{ steps.meta-mqtt.outputs.tags }}
+          labels: ${{ steps.meta-mqtt.outputs.labels }}

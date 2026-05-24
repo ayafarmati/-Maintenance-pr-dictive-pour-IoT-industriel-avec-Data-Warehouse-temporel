@@ -138,7 +138,7 @@ python spark/apps/mqtt_test_stream.py
 ## 📊 Cas d'Usage BI (Business Intelligence)
 
 Le Data Warehouse final dans ClickHouse (`iot_metrics_DW`) est prêt à être connecté à **Power BI** via ODBC.
-Grâce à la dimension `dim_status` et la table `fact_model_drift`, un Data Analyst peut créer des tableaux de bord en temps réel pour :
+Grâce à la dimension `dim_status` et la table `fact_model_drift`, nous pouvons créer des tableaux de bord en temps réel pour :
 1. **Maintenance** : Isoler instantanément les moteurs en état **Critique** (RUL <= 15).
 2. **Diagnostic** : Mettre en corrélation la chute de la durée de vie prédite avec la montée en température/pression des capteurs.
 3. **Santé IA** : Surveiller en temps réel le taux de *Concept Drift* pour déclencher un ré-entraînement automatique si les données de vol changent radicalement.

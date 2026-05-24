@@ -36,7 +36,7 @@ with DAG(
         },
         # Installation des dépendances MLflow avant le spark-submit car l'image de base ne les a pas
         command=(
-            "bash -c \"pip3 install --user mlflow xgboost pandas boto3 && "
+            "bash -c \"pip3 install --user 'sqlalchemy<2.0.50' mlflow xgboost pandas boto3 && "
             "/opt/spark/bin/spark-submit "
             "--master local[*] " # S'exécute en local car MLflow/XGBoost sont installés sur le client
             "--conf spark.jars.ivy=/tmp/.ivy2 "
@@ -64,7 +64,7 @@ with DAG(
             "PYTHONUSERBASE": "/tmp"
         },
         command=(
-            "bash -c \"pip3 install --user mlflow pandas boto3 scipy s3fs pyarrow && "
+            "bash -c \"pip3 install --user 'sqlalchemy<2.0.50' mlflow pandas boto3 scipy s3fs pyarrow && "
             "/opt/spark/bin/spark-submit "
             "--master local[*] "
             "--conf spark.jars.ivy=/tmp/.ivy2 "

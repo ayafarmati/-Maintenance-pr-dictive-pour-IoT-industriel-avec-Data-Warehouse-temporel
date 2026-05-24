@@ -34,6 +34,7 @@ try:
     experiment = client.get_experiment_by_name("rul_xgboost")
     runs = client.search_runs(
         experiment_ids=[experiment.experiment_id], 
+        filter_string="tags.mlflow.runName != 'concept_drift_monitoring'",
         order_by=["start_time DESC"], 
         max_results=1
     )
@@ -51,7 +52,12 @@ loaded_model = mlflow.xgboost.load_model(model_uri)
 # 3. Lecture de la couche Silver
 silver_path = "s3a://iot-lake/hudi/slv_sensor_features"
 print(f"Lecture des données Silver depuis {silver_path}...")
-silver_df = spark.read.format("hudi").load(silver_path)
+try:
+    silver_df = spark.read.format("hudi").load(silver_path)
+except Exception as e:
+    print(f"Erreur lors de la lecture de la table Silver (elle n'existe peut-être pas encore) : {e}")
+    spark.stop()
+    exit(0)
 
 # 4. Préparation des données pour l'inférence
 # Le modèle attend une colonne `unit_number` de type entier, mais la couche Silver a `sensor_id` (ex: "unit_1")

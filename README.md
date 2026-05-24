@@ -60,8 +60,8 @@ graph TD
 ### 2. Nettoyage & Feature Store (Bronze -> Silver)
 - **Traitement Batch (`bronze_to_silver.py`)** : Exécuté de façon planifiée par Airflow.
 - **Nettoyage et Imputation** : Remplace les valeurs manquantes/aberrantes en utilisant un référentiel historique.
-- **Agrégation** : Calcule des moyennes glissantes sur des fenêtres d'une minute pour lisser le bruit des capteurs.
-- **Stockage Silver** : Les données propres sont sauvegardées dans `slv_sensor_features` (Hudi). Cette couche agit comme un véritable **Lakehouse Feature Store**.
+- **Agrégation temporelle** : Calcule des moyennes glissantes sur des fenêtres d'une minute pour lisser le bruit des capteurs.
+- **Stockage Silver (Le Feature Store)** : Les données propres et enrichies sont sauvegardées dans `slv_sensor_features` (Hudi). Cette couche agit comme un véritable **Feature Store**. Elle centralise les "features" (caractéristiques) prêtes à l'emploi, garantissant que le modèle ML s'entraîne sur exactement les mêmes transformations de données que celles utilisées lors de l'inférence en production, ce qui élimine le risque de décalage (*Training-Serving Skew*).
 
 ### 3. Modélisation MLOps (MLflow + XGBoost)
 - **Entraînement (`train_xgboost.py`)** : Un modèle XGBoost est entraîné sur les données historiques pour apprendre à prédire le RUL en fonction de la dégradation des capteurs.

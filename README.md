@@ -60,8 +60,8 @@ graph TD
 ### 2. Nettoyage & Feature Store (Bronze -> Silver)
 - **Traitement Batch (`bronze_to_silver.py`)** : Exécuté de façon planifiée par Airflow.
 - **Nettoyage et Imputation** : Remplace les valeurs manquantes/aberrantes en utilisant un référentiel historique.
-- **Agrégation** : Calcule des moyennes glissantes sur des fenêtres d'une minute pour lisser le bruit des capteurs.
-- **Stockage Silver** : Les données propres sont sauvegardées dans `slv_sensor_features` (Hudi). Cette couche agit comme un véritable **Lakehouse Feature Store**.
+- **Agrégation temporelle** : Calcule des moyennes glissantes sur des fenêtres d'une minute pour lisser le bruit des capteurs.
+- **Stockage Silver (Le Feature Store)** : Les données propres et enrichies sont sauvegardées dans `slv_sensor_features` (Hudi). Cette couche agit comme un véritable **Feature Store**. Elle centralise les "features" (caractéristiques) prêtes à l'emploi, garantissant que le modèle ML s'entraîne sur exactement les mêmes transformations de données que celles utilisées lors de l'inférence en production, ce qui élimine le risque de décalage (*Training-Serving Skew*).
 
 ### 3. Modélisation MLOps (MLflow + XGBoost)
 - **Entraînement (`train_xgboost.py`)** : Un modèle XGBoost est entraîné sur les données historiques pour apprendre à prédire le RUL en fonction de la dégradation des capteurs.
@@ -138,7 +138,7 @@ python spark/apps/mqtt_test_stream.py
 ## 📊 Cas d'Usage BI (Business Intelligence)
 
 Le Data Warehouse final dans ClickHouse (`iot_metrics_DW`) est prêt à être connecté à **Power BI** via ODBC.
-Grâce à la dimension `dim_status` et la table `fact_model_drift`, on peut créer des tableaux de bord en temps réel pour :
+Grâce à la dimension `dim_status` et la table `fact_model_drift`, nous pouvons créer des tableaux de bord en temps réel pour :
 1. **Maintenance** : Isoler instantanément les moteurs en état **Critique** (RUL <= 15).
 2. **Diagnostic** : Mettre en corrélation la chute de la durée de vie prédite avec la montée en température/pression des capteurs.
 3. **Santé IA** : Surveiller en temps réel le taux de *Concept Drift* pour déclencher un ré-entraînement automatique si les données de vol changent radicalement.

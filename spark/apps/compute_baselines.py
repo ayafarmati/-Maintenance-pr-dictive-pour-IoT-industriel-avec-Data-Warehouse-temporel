@@ -1,5 +1,7 @@
 import os
+# pyrefly: ignore [missing-import]
 from pyspark.sql import SparkSession
+# pyrefly: ignore [missing-import]
 from pyspark.sql.functions import col, avg, concat, lit
 
 # Initialisation de Spark

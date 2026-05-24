@@ -1,5 +1,7 @@
 import os
+# pyrefly: ignore [missing-import]
 from pyspark.sql import SparkSession
+# pyrefly: ignore [missing-import]
 from pyspark.sql.functions import col, window, avg, current_timestamp, to_timestamp, coalesce
 
 # Initialisation de Spark

@@ -81,4 +81,14 @@ with mlflow.start_run():
     mlflow.log_metric("mae", mae)
     signature = infer_signature(X_train, preds)
     mlflow.xgboost.log_model(model, "model", model_format="json", signature=signature)
+    
+    # Export Reference Data for Concept Drift
+    reference_data_uri = "s3://iot-lake/models/reference_data.parquet"
+    print(f"Exporting reference data to {reference_data_uri}")
+    X_train.to_parquet(
+        reference_data_uri,
+        index=False,
+        storage_options=build_storage_options(reference_data_uri)
+    )
+
 

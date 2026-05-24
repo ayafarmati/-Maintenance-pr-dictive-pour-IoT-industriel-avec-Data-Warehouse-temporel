@@ -1,7 +1,9 @@
 import os
 import mlflow
 import pandas as pd
+# pyrefly: ignore [missing-import]
 from pyspark.sql import SparkSession
+# pyrefly: ignore [missing-import]
 from pyspark.sql.functions import (
     col, regexp_replace, hash, abs, date_format, 
     year, month, dayofmonth, hour, minute, to_timestamp, concat, when, lit

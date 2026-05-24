@@ -48,6 +48,8 @@ jobs:
           flake8 airflow/dags/ spark/apps/ ml/ tools/ --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
 
       - name: Validate Airflow DAGs Integrity
+        env:
+          PROJECT_HOST_PATH: "/mock/path"
         run: |
           python -c "from airflow.models import DagBag; d = DagBag(dag_folder='airflow/dags/', include_examples=False); assert len(d.import_errors) == 0, f'DAG import errors found: {d.import_errors}'"
 

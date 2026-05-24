@@ -4,14 +4,17 @@ on:
   push:
     branches:
       - main
+      - dev
   pull_request:
     branches:
       - main
+      - dev
 
 env:
   REGISTRY: ghcr.io
-  # IMAGE_NAME sera automatiquement remplacé par le nom de votre repo (ex: username/repo)
-  IMAGE_NAME: ${{ github.repository }}
+  # Docker interdit les noms d'images qui commencent par un tiret. 
+  # On utilise donc un nom personnalisé propre au lieu du nom du repo GitHub.
+  IMAGE_NAME: ${{ github.repository_owner }}/iot-predictive-maintenance
 
 jobs:
   lint-and-validate:
@@ -28,7 +31,9 @@ jobs:
       - name: Install Linting Tools & Dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install black flake8 apache-airflow pandas pyspark evidently scipy xgboost
+          # Installation séparée d'Airflow avec les contraintes exactes pour éviter d'installer une vieille version
+          pip install "apache-airflow==2.9.2" "apache-airflow-providers-docker" --constraint "https://raw.githubusercontent.com/apache/airflow/constraints-2.9.2/constraints-3.11.txt"
+          pip install black flake8 pandas pyspark scipy xgboost
 
       - name: Check code formatting with Black
         # continue-on-error pour ne pas bloquer le pipeline au début si le code n'est pas formaté
@@ -44,6 +49,8 @@ jobs:
           flake8 airflow/dags/ spark/apps/ ml/ tools/ --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
 
       - name: Validate Airflow DAGs Integrity
+        env:
+          PROJECT_HOST_PATH: "/mock/path"
         run: |
           python -c "from airflow.models import DagBag; d = DagBag(dag_folder='airflow/dags/', include_examples=False); assert len(d.import_errors) == 0, f'DAG import errors found: {d.import_errors}'"
 

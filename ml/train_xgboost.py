@@ -49,20 +49,40 @@ if "RUL" not in train_df.columns:
 if "engine_model" in train_df.columns:
     train_df["engine_model"] = train_df["engine_model"].astype("category")
 
+def add_rolling_features(df, windows=[5, 10, 15]):
+    exclude_cols = ['unit_number', 'time_in_cycles', 'engine_model', 'RUL']
+    sensor_cols = [c for c in df.columns if c not in exclude_cols]
+    df = df.sort_values(['unit_number', 'time_in_cycles'])
+    
+    new_features = []
+    for w in windows:
+        rolling_grp = df.groupby('unit_number')[sensor_cols].rolling(window=w, min_periods=1)
+        mean_df = rolling_grp.mean().reset_index(level=0, drop=True)
+        std_df = rolling_grp.std().reset_index(level=0, drop=True).fillna(0)
+        
+        mean_df.columns = [f"{c}_mean_{w}" for c in sensor_cols]
+        std_df.columns = [f"{c}_std_{w}" for c in sensor_cols]
+        new_features.extend([mean_df, std_df])
+        
+    return pd.concat([df] + new_features, axis=1)
+
+train_df = add_rolling_features(train_df, windows=[5, 10, 15])
+
 feature_cols = [c for c in train_df.columns if c != "RUL"]
 X = train_df[feature_cols]
-y = train_df["RUL"]
+# Plafonnement du RUL à 130 (Piecewise Linear Degradation)
+y = train_df["RUL"].clip(upper=130)
 
 X_train, X_val, y_train, y_val = train_test_split(
     X, y, test_size=0.2, random_state=42
 )
 
 params = {
-    "n_estimators": 300,
+    "n_estimators": 500,
     "max_depth": 6,
-    "learning_rate": 0.05,
+    "learning_rate": 0.03,
     "subsample": 0.8,
-    "colsample_bytree": 0.8,
+    "colsample_bytree": 0.6,
     "objective": "reg:squarederror",
     "random_state": 42,
     "enable_categorical": True,

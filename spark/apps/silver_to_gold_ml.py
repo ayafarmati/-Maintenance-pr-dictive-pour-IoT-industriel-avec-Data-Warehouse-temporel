@@ -6,8 +6,9 @@ from pyspark.sql import SparkSession
 # pyrefly: ignore [missing-import]
 from pyspark.sql.functions import (
     col, regexp_replace, hash, abs, date_format, 
-    year, month, dayofmonth, hour, minute, to_timestamp, concat, when, lit
+    year, month, dayofmonth, hour, minute, to_timestamp, concat, when, lit, avg, stddev, coalesce
 )
+from pyspark.sql.window import Window
 
 # 1. Initialisation de Spark
 spark = (
@@ -74,6 +75,23 @@ feature_cols = [
     "vitesse_corrigee_ventilateur_demandee", "debit_refroidissement_turbine_HP", 
     "debit_refroidissement_turbine_BP", "engine_model"
 ]
+
+sensor_cols = [c for c in feature_cols if c not in ("unit_number", "time_in_cycles", "engine_model")]
+
+windows = [5, 10, 15]
+for w in windows:
+    window_spec = Window.partitionBy("unit_number").orderBy("time_in_cycles").rowsBetween(-(w-1), Window.currentRow)
+    
+    mean_cols = []
+    std_cols = []
+    for c in sensor_cols:
+        ml_df = ml_df.withColumn(f"{c}_mean_{w}", avg(col(c)).over(window_spec))
+        ml_df = ml_df.withColumn(f"{c}_std_{w}", coalesce(stddev(col(c)).over(window_spec), lit(0.0)))
+        mean_cols.append(f"{c}_mean_{w}")
+        std_cols.append(f"{c}_std_{w}")
+        
+    feature_cols.extend(mean_cols)
+    feature_cols.extend(std_cols)
 
 print("Application du modèle ML pour prédire le RUL (via Pandas Driver)...")
 # 5. Inférence via Pandas sur le Driver (évite d'installer XGBoost sur 8 workers)

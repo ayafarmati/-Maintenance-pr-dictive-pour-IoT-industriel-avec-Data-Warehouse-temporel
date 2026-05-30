@@ -135,10 +135,59 @@ python spark/apps/mqtt_test_stream.py
 
 ---
 
-## 📊 Cas d'Usage BI (Business Intelligence)
+## 📊 Cas d'Usage BI (Business Intelligence) & Dashboard Power BI
 
-Le Data Warehouse final dans ClickHouse (`iot_metrics_DW`) est prêt à être connecté à **Power BI** via ODBC.
-Grâce à la dimension `dim_status` et la table `fact_model_drift`, nous pouvons créer des tableaux de bord en temps réel pour :
-1. **Maintenance** : Isoler instantanément les moteurs en état **Critique** (RUL <= 15).
-2. **Diagnostic** : Mettre en corrélation la chute de la durée de vie prédite avec la montée en température/pression des capteurs.
-3. **Santé IA** : Surveiller en temps réel le taux de *Concept Drift* pour déclencher un ré-entraînement automatique si les données de vol changent radicalement.
+Le Data Warehouse final dans ClickHouse (`iot_metrics_DW`) est connecté à **Power BI** (via ODBC ou le connecteur ClickHouse direct). Un tableau de bord interactif et complet nommé **"Analyse Temporelle de la Maintenance Prédictive des Moteurs"** a été configuré et est fourni directement dans le dépôt sous la forme du fichier [iot_project (1).pbix](file:///c:/Users/aya/Desktop/projet_iot/-Maintenance-pr-dictive-pour-IoT-industriel-avec-Data-Warehouse-temporel/iot_project%20(1).pbix). Il permet de surveiller en temps réel l'état de santé de la flotte de moteurs turbofans (basé sur le jeu de données C-MAPSS de la NASA).
+
+Le dashboard se compose de 5 pages d'analyse spécialisées :
+
+### 1. 🏠 Overview (Vue d'ensemble)
+* **Objectif** : Obtenir une visibilité instantanée sur la flotte et isoler immédiatement les moteurs à risque critique.
+* **Filtres de navigation (Slicers)** :
+  - **Moteur** : Permet de sélectionner un turboréacteur spécifique (ex: `RR-93030`, `CFM-15050`, `CFM-29090`).
+  - **Date** : Sélecteur de période temporelle pour analyser des fenêtres d'ingestion spécifiques.
+  - **Etat du Moteur** : Filtre global par statut de criticité (`All`, `Sain`, `Avertissement`, `Critique`).
+* **Visuels principaux** :
+  - **RUL Prédit dans le Temps** : Graphique de courbe linéaire affichant la trajectoire temporelle de la durée de vie utile restante (RUL) estimée par le modèle XGBoost.
+  - **Etats des Moteurs Actuels** : Diagramme circulaire (Pie Chart) illustrant la répartition globale des moteurs par état de santé (Sain, Avertissement, Critique).
+  - **Résumé des Metrics Actuellement** : Tableau de synthèse affichant les dernières valeurs collectées pour les principaux capteurs (températures de compresseurs, pressions, vitesses physique et corrigée du cœur, débits de refroidissement, etc.).
+
+### 2. 📈 Metrics dans le Temps (Pages 1 & 2)
+* **Objectif** : Analyser l'évolution temporelle des capteurs physiques pour diagnostiquer l'usure mécanique.
+* **Détail des pages** :
+  - **Metrics dans le Temps 1** : Affiche les courbes de tendance pour le RUL prédit, la température de sortie du compresseur HP, la température de sortie du compresseur BP, la pression totale du compresseur HP, la température de sortie de la turbine BP et le ratio carburant/pression.
+  - **Metrics dans le Temps 2** : Affiche les courbes de tendance pour la pression statique du compresseur HP, la vitesse physique du cœur, la vitesse corrigée du cœur, l'enthalpie d'air de purge et les débits de refroidissement des turbines HP et BP.
+
+### 3. 🔄 Analyse des Corrélations (Pages 1/2 & 2/2)
+* **Objectif** : Identifier et corréler l'évolution des mesures physiques avec la dégradation (chute du RUL) pour valider la pertinence physique du modèle d'IA.
+* **Détail des pages** :
+  - **Correlation 1/2** : Nuages de points (Scatter Plots) avec courbe de tendance linéaire reliant le RUL prédit (axe Y) aux capteurs principaux : température de sortie du compresseur HP/BP, pression totale du compresseur HP, température de sortie de la turbine BP et ratio carburant/pression.
+  - **Correlation 2/2** : Nuages de points avec courbe de tendance linéaire reliant le RUL prédit à la pression statique du compresseur HP, la vitesse physique du cœur, la vitesse corrigée du cœur, l'enthalpie d'air de purge et les débits de refroidissement des turbines HP et BP.
+  - *Interprétation physique* :
+    - Les températures augmentent à mesure que le RUL baisse (corrélation négative forte, indiquant une surchauffe par frottement).
+    - Les débits de refroidissement diminuent à l'approche de la panne (corrélation positive avec le RUL).
+
+---
+
+### 🔌 Guide de Connexion ClickHouse ➔ Power BI
+
+Pour alimenter ce dashboard depuis votre environnement local dockerisé :
+
+#### Option A : Via le connecteur natif ClickHouse
+1. Ouvrez **Power BI Desktop**, cliquez sur **Obtenir des données** -> **Plus...**
+2. Recherchez et sélectionnez le connecteur officiel **ClickHouse**.
+3. Renseignez l'hôte : `localhost:8123` et la base de données : `iot_metrics_DW`.
+4. Sélectionnez le mode de connexion :
+   - **DirectQuery** (Recommandé pour un suivi en temps réel du flux de streaming MQTT).
+   - **Import** (Pour une performance de calcul maximale en local).
+5. Renseignez les identifiants : Utilisateur `iot` / Mot de passe `iot123`.
+
+#### Option B : Via un pilote ODBC
+1. Installez le pilote **ClickHouse ODBC Driver** (Unicode) sur votre machine Windows.
+2. Créez un DSN Système dans l'Administrateur de sources de données ODBC :
+   - *Host* : `localhost`
+   - *Port* : `8123`
+   - *Database* : `iot_metrics_DW`
+   - *User* : `iot` / *Password* : `iot123`
+3. Dans Power BI, connectez-vous via la source de données **ODBC** en sélectionnant votre DSN.
+

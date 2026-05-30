@@ -127,10 +127,10 @@ python spark/apps/mqtt_test_stream.py
 ```
 
 ### 5. Interfaces Web (Monitoring)
-- **Airflow (Orchestration)** : [http://localhost:8082](http://localhost:8082) (User: `admin` / Pass: `admin`)
-- **MinIO (Data Lake)** : [http://localhost:9001](http://localhost:9001) (User: `minio` / Pass: `minio123`)
+- **Airflow (Orchestration)** : [http://localhost:8082](http://localhost:8082) (Identifiants configurés dans l'environnement)
+- **MinIO (Data Lake)** : [http://localhost:9001](http://localhost:9001) (Identifiants configurés pour MinIO)
 - **MLflow (MLOps)** : [http://localhost:5000](http://localhost:5000)
-- **ClickHouse (Data Warehouse)** : Port `8123` (User: `iot` / Pass: `iot123`)
+- **ClickHouse (Data Warehouse)** : Port `8123` (Identifiants de base de données configurés)
 - **Spark Master UI** : [http://localhost:8080](http://localhost:8080)
 
 ---
@@ -180,7 +180,7 @@ Pour alimenter ce dashboard depuis votre environnement local dockerisé :
 4. Sélectionnez le mode de connexion :
    - **DirectQuery** (Recommandé pour un suivi en temps réel du flux de streaming MQTT).
    - **Import** (Pour une performance de calcul maximale en local).
-5. Renseignez les identifiants : Utilisateur `iot` / Mot de passe `iot123`.
+5. Renseignez les identifiants de connexion configurés pour ClickHouse.
 
 #### Option B : Via un pilote ODBC
 1. Installez le pilote **ClickHouse ODBC Driver** (Unicode) sur votre machine Windows.
@@ -188,6 +188,6 @@ Pour alimenter ce dashboard depuis votre environnement local dockerisé :
    - *Host* : `localhost`
    - *Port* : `8123`
    - *Database* : `iot_metrics_DW`
-   - *User* : `iot` / *Password* : `iot123`
+   - *User* & *Password* : Saisissez vos identifiants configurés dans l'environnement DWH.
 3. Dans Power BI, connectez-vous via la source de données **ODBC** en sélectionnant votre DSN.
 

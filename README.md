@@ -137,7 +137,7 @@ python spark/apps/mqtt_test_stream.py
 
 ## 📊 Cas d'Usage BI (Business Intelligence) & Dashboard Power BI
 
-Le Data Warehouse final dans ClickHouse (`iot_metrics_DW`) est connecté à **Power BI** (via ODBC ou le connecteur ClickHouse direct). Un tableau de bord interactif et complet nommé **"Analyse Temporelle de la Maintenance Prédictive des Moteurs"** a été configuré et est fourni directement dans le dépôt sous la forme du fichier [iot_project (1).pbix](file:///c:/Users/aya/Desktop/projet_iot/-Maintenance-pr-dictive-pour-IoT-industriel-avec-Data-Warehouse-temporel/iot_project%20(1).pbix). Il permet de surveiller en temps réel l'état de santé de la flotte de moteurs turbofans (basé sur le jeu de données C-MAPSS de la NASA).
+Le Data Warehouse final dans ClickHouse (`iot_metrics_DW`) est connecté à **Power BI** (via ODBC ou le connecteur ClickHouse direct). Un tableau de bord interactif et complet nommé **"Analyse Temporelle de la Maintenance Prédictive des Moteurs"** a été configuré et est fourni directement dans le dossier [PowerBi/](file:///c:/Users/aya/Desktop/projet_iot/-Maintenance-pr-dictive-pour-IoT-industriel-avec-Data-Warehouse-temporel/PowerBi) sous la forme du fichier [Analyse_Maintenance_Predictive_Moteurs.pbix](file:///c:/Users/aya/Desktop/projet_iot/-Maintenance-pr-dictive-pour-IoT-industriel-avec-Data-Warehouse-temporel/PowerBi/Analyse_Maintenance_Predictive_Moteurs.pbix). Il permet de surveiller en temps réel l'état de santé de la flotte de moteurs turbofans (basé sur le jeu de données C-MAPSS de la NASA).
 
 Le dashboard se compose de 5 pages d'analyse spécialisées :
 
